@@ -216,17 +216,27 @@ class SmartVenueApp {
         if (this.bracketToggleBtn && this.bracketModal) {
             this.bracketToggleBtn.addEventListener('click', () => {
                 this.bracketModal.classList.add('active');
+                this.bracketModal.setAttribute('aria-hidden', 'false');
+                this.bracketToggleBtn.setAttribute('aria-expanded', 'true');
             });
         }
         if (this.closeBracketBtn && this.bracketModal) {
             this.closeBracketBtn.addEventListener('click', () => {
                 this.bracketModal.classList.remove('active');
+                this.bracketModal.setAttribute('aria-hidden', 'true');
+                if (this.bracketToggleBtn) {
+                    this.bracketToggleBtn.setAttribute('aria-expanded', 'false');
+                }
             });
         }
         if (this.bracketModal) {
             this.bracketModal.addEventListener('click', (e) => {
                 if (e.target === this.bracketModal) {
                     this.bracketModal.classList.remove('active');
+                    this.bracketModal.setAttribute('aria-hidden', 'true');
+                    if (this.bracketToggleBtn) {
+                        this.bracketToggleBtn.setAttribute('aria-expanded', 'false');
+                    }
                 }
             });
         }
@@ -427,13 +437,25 @@ class SmartVenueApp {
             countdownLabel.innerText = "Kickoff (Other Matches):";
             
             // Render teams with live score and time
-            ribbonTeams.innerHTML = `
-                <span class="country-badge">${venue.match.split(' vs ')[0]}</span>
-                <span class="vs-text">VS</span>
-                <span class="country-badge">${venue.match.split(' vs ')[1]}</span>
-                <span class="match-score-pill mono-num" id="ribbon-score">${venue.score}</span>
-                <span class="match-time-pill live-badge" id="ribbon-time">${venue.time}</span>
-            `;
+            ribbonTeams.textContent = '';
+            const t1 = document.createElement('span');
+            t1.className = 'country-badge';
+            t1.textContent = venue.match.split(' vs ')[0];
+            const vs = document.createElement('span');
+            vs.className = 'vs-text';
+            vs.textContent = 'VS';
+            const t2 = document.createElement('span');
+            t2.className = 'country-badge';
+            t2.textContent = venue.match.split(' vs ')[1];
+            const score = document.createElement('span');
+            score.className = 'match-score-pill mono-num';
+            score.id = 'ribbon-score';
+            score.textContent = venue.score;
+            const time = document.createElement('span');
+            time.className = 'match-time-pill live-badge';
+            time.id = 'ribbon-time';
+            time.textContent = venue.time;
+            ribbonTeams.append(t1, vs, t2, score, time);
         } else if (venue.status === "COMPLETED") {
             ribbonStatusBadge.className = "info-badge";
             ribbonStatusBadge.style.backgroundColor = "var(--gold-brand-dim)";
@@ -442,13 +464,27 @@ class SmartVenueApp {
             ribbonStatusBadge.innerText = "COMPLETED";
             countdownLabel.innerText = "Match Cleared:";
             
-            ribbonTeams.innerHTML = `
-                <span class="country-badge">${venue.match.split(' vs ')[0]}</span>
-                <span class="vs-text">VS</span>
-                <span class="country-badge">${venue.match.split(' vs ')[1]}</span>
-                <span class="match-score-pill mono-num">${venue.score}</span>
-                <span class="match-time-pill" style="background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: var(--text-muted); animation: none;">FT</span>
-            `;
+            ribbonTeams.textContent = '';
+            const t1 = document.createElement('span');
+            t1.className = 'country-badge';
+            t1.textContent = venue.match.split(' vs ')[0];
+            const vs = document.createElement('span');
+            vs.className = 'vs-text';
+            vs.textContent = 'VS';
+            const t2 = document.createElement('span');
+            t2.className = 'country-badge';
+            t2.textContent = venue.match.split(' vs ')[1];
+            const score = document.createElement('span');
+            score.className = 'match-score-pill mono-num';
+            score.textContent = venue.score;
+            const time = document.createElement('span');
+            time.className = 'match-time-pill';
+            time.style.backgroundColor = 'rgba(255,255,255,0.05)';
+            time.style.borderColor = 'rgba(255,255,255,0.1)';
+            time.style.color = 'var(--text-muted)';
+            time.style.animation = 'none';
+            time.textContent = 'FT';
+            ribbonTeams.append(t1, vs, t2, score, time);
         } else if (venue.status === "UPCOMING") {
             ribbonStatusBadge.className = "info-badge";
             ribbonStatusBadge.style.backgroundColor = "rgba(234, 179, 8, 0.15)";
@@ -457,12 +493,24 @@ class SmartVenueApp {
             ribbonStatusBadge.innerText = "UPCOMING MATCH";
             countdownLabel.innerText = "Time to Kickoff:";
             
-            ribbonTeams.innerHTML = `
-                <span class="country-badge">${venue.match.split(' vs ')[0]}</span>
-                <span class="vs-text">VS</span>
-                <span class="country-badge">${venue.match.split(' vs ')[1]}</span>
-                <span class="match-time-pill" style="background-color: var(--gold-brand-dim); color: var(--gold-brand); border: 1px solid rgba(245,158,11,0.25); animation: none;">JULY 7</span>
-            `;
+            ribbonTeams.textContent = '';
+            const t1 = document.createElement('span');
+            t1.className = 'country-badge';
+            t1.textContent = venue.match.split(' vs ')[0];
+            const vs = document.createElement('span');
+            vs.className = 'vs-text';
+            vs.textContent = 'VS';
+            const t2 = document.createElement('span');
+            t2.className = 'country-badge';
+            t2.textContent = venue.match.split(' vs ')[1];
+            const time = document.createElement('span');
+            time.className = 'match-time-pill';
+            time.style.backgroundColor = 'var(--gold-brand-dim)';
+            time.style.color = 'var(--gold-brand)';
+            time.style.border = '1px solid rgba(245,158,11,0.25)';
+            time.style.animation = 'none';
+            time.textContent = 'JULY 7';
+            ribbonTeams.append(t1, vs, t2, time);
         } else {
             ribbonStatusBadge.className = "info-badge";
             ribbonStatusBadge.style.backgroundColor = "rgba(255,255,255,0.05)";
@@ -471,10 +519,19 @@ class SmartVenueApp {
             ribbonStatusBadge.innerText = "VENUE STANDBY";
             countdownLabel.innerText = "Next Stage:";
             
-            ribbonTeams.innerHTML = `
-                <span class="country-badge">${venue.name}</span>
-                <span class="match-time-pill" style="background-color: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); margin-left: 10px; animation: none;">${venue.stage}</span>
-            `;
+            ribbonTeams.textContent = '';
+            const t1 = document.createElement('span');
+            t1.className = 'country-badge';
+            t1.textContent = venue.name;
+            const time = document.createElement('span');
+            time.className = 'match-time-pill';
+            time.style.backgroundColor = 'rgba(255,255,255,0.05)';
+            time.style.color = 'var(--text-muted)';
+            time.style.border = '1px solid rgba(255,255,255,0.1)';
+            time.style.marginLeft = '10px';
+            time.style.animation = 'none';
+            time.textContent = venue.stage;
+            ribbonTeams.append(t1, time);
         }
     }
 
@@ -1053,18 +1110,45 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
         const newItem = document.createElement('div');
         newItem.className = `incident-item ${template.priority === 'p-red' ? 'priority-high' : 'priority-medium'}`;
         newItem.id = template.id;
-        newItem.innerHTML = `
-            <div class="inc-meta">
-                <span class="inc-badge ${template.priority}">${badgeColor}</span>
-                <span class="inc-time mono-num">${new Date().toTimeString().split(' ')[0].substring(0, 5)}</span>
-            </div>
-            <h4 class="inc-title">${template.title}</h4>
-            <p class="inc-desc">${template.desc}</p>
-            <div class="inc-ai-action">
-                <strong>GenAI Dispatch recommendation:</strong> ${template.ai}
-                <button class="dispatch-btn" data-incident-id="${template.id}" data-dispatch-msg="Simulated dispatch completed. Field staff reported on-scene and resolved.">Execute Dispatch Plan</button>
-            </div>
-        `;
+
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'inc-meta';
+        
+        const badgeSpan = document.createElement('span');
+        badgeSpan.className = `inc-badge ${template.priority}`;
+        badgeSpan.textContent = badgeColor;
+        
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'inc-time mono-num';
+        timeSpan.textContent = new Date().toTimeString().split(' ')[0].substring(0, 5);
+        
+        metaDiv.append(badgeSpan, timeSpan);
+        
+        const titleH4 = document.createElement('h4');
+        titleH4.className = 'inc-title';
+        titleH4.textContent = template.title;
+        
+        const descP = document.createElement('p');
+        descP.className = 'inc-desc';
+        descP.textContent = template.desc;
+        
+        const actionDiv = document.createElement('div');
+        actionDiv.className = 'inc-ai-action';
+        
+        const strongLabel = document.createElement('strong');
+        strongLabel.textContent = 'GenAI Dispatch recommendation:';
+        
+        const aiText = document.createTextNode(` ${template.ai}`);
+        
+        const dispatchBtn = document.createElement('button');
+        dispatchBtn.className = 'dispatch-btn';
+        dispatchBtn.setAttribute('data-incident-id', template.id);
+        dispatchBtn.setAttribute('data-dispatch-msg', 'Simulated dispatch completed. Field staff reported on-scene and resolved.');
+        dispatchBtn.textContent = 'Execute Dispatch Plan';
+        
+        actionDiv.append(strongLabel, aiText, dispatchBtn);
+        
+        newItem.append(metaDiv, titleH4, descP, actionDiv);
 
         this.incidentList.insertBefore(newItem, this.incidentList.firstChild);
         this.incidentList.scrollTop = 0;
@@ -1146,7 +1230,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
         const teamsEl = document.getElementById(match.tickerTeamsId);
         const timeEl = document.getElementById(match.tickerTimeId);
         if (teamsEl) {
-            teamsEl.innerHTML = `${match.home} ${match.homeFlag} ${match.homeScore}-${match.awayScore} ${match.awayFlag} ${match.away}`;
+            teamsEl.textContent = `${match.home} ${match.homeFlag} ${match.homeScore}-${match.awayScore} ${match.awayFlag} ${match.away}`;
         }
         if (timeEl) {
             if (match.isFT) {
@@ -1249,7 +1333,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
         if (matchId === 'usager') {
             const slot = document.getElementById('qf-slot-winner1');
             if (slot) {
-                slot.innerHTML = `${winnerFlag} ${winnerName}`;
+                slot.textContent = `${winnerFlag} ${winnerName}`;
                 slot.classList.add('filled-team');
                 slot.style.color = "var(--text-light)";
                 slot.style.fontWeight = "700";
@@ -1257,7 +1341,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
         } else if (matchId === 'argfra') {
             const slot = document.getElementById('qf-slot-winner2');
             if (slot) {
-                slot.innerHTML = `${winnerFlag} ${winnerName}`;
+                slot.textContent = `${winnerFlag} ${winnerName}`;
                 slot.classList.add('filled-team');
                 slot.style.color = "var(--text-light)";
                 slot.style.fontWeight = "700";
@@ -1327,23 +1411,66 @@ A thrilling goal has been scored at **${venue.name}**!
     }
 
     /* Helper Chat styling */
-    appendChatMessage(container, avatar, text, className) {
-        let escapedText = this.escapeHTML(text);
-        // Convert mock markdown **bold** to actual HTML formatting
-        let formattedText = escapedText
-            .replace(/\n/g, '<br>')
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/### (.*?)(<br>|$)/g, '<h3>$1</h3>')
-            .replace(/\* (.*?)(<br>|$)/g, '<li>$1</li>');
+    parseMarkdownToDOM(text) {
+        const container = document.createElement('div');
+        const lines = text.split('\n');
+        lines.forEach((line, index) => {
+            if (index > 0) {
+                container.appendChild(document.createElement('br'));
+            }
+            if (line.trim().startsWith('### ')) {
+                const h3 = document.createElement('h3');
+                this.parseInlineFormatting(line.trim().substring(4), h3);
+                container.appendChild(h3);
+            } else if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
+                const li = document.createElement('li');
+                const cleanLine = line.trim();
+                const startIdx = cleanLine.startsWith('* ') ? 2 : 2;
+                this.parseInlineFormatting(cleanLine.substring(startIdx), li);
+                container.appendChild(li);
+            } else {
+                const span = document.createElement('span');
+                this.parseInlineFormatting(line, span);
+                container.appendChild(span);
+            }
+        });
+        return container;
+    }
 
+    parseInlineFormatting(text, parentEl) {
+        const regex = /\*\*(.*?)\*\*/g;
+        let lastIndex = 0;
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                parentEl.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
+            }
+            const strong = document.createElement('strong');
+            strong.textContent = match[1];
+            parentEl.appendChild(strong);
+            lastIndex = regex.lastIndex;
+        }
+        if (lastIndex < text.length) {
+            parentEl.appendChild(document.createTextNode(text.substring(lastIndex)));
+        }
+    }
+
+    /* Helper Chat styling */
+    appendChatMessage(container, avatar, text, className) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${className}`;
-        msgDiv.innerHTML = `
-            <div class="msg-avatar ${className.includes('ops') ? 'gold-bg' : ''}">${avatar}</div>
-            <div class="msg-bubble">
-                <p>${formattedText}</p>
-            </div>
-        `;
+
+        const avatarDiv = document.createElement('div');
+        avatarDiv.className = `msg-avatar ${className.includes('ops') ? 'gold-bg' : ''}`;
+        avatarDiv.textContent = avatar;
+
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'msg-bubble';
+
+        const contentDiv = this.parseMarkdownToDOM(text);
+        bubbleDiv.appendChild(contentDiv);
+
+        msgDiv.append(avatarDiv, bubbleDiv);
         container.appendChild(msgDiv);
         container.scrollTop = container.scrollHeight;
     }
@@ -1353,12 +1480,25 @@ A thrilling goal has been scored at **${venue.name}**!
         const typingDiv = document.createElement('div');
         typingDiv.className = 'message assistant-msg typing-indicator-msg';
         typingDiv.id = id;
-        typingDiv.innerHTML = `
-            <div class="msg-avatar">🤖</div>
-            <div class="msg-bubble" style="padding: 0.5rem 1rem;">
-                <p class="mono-num" style="font-size: 1.15rem; letter-spacing: 2px; margin: 0; animation: blink 1.4s infinite;">...</p>
-            </div>
-        `;
+
+        const avatarDiv = document.createElement('div');
+        avatarDiv.className = 'msg-avatar';
+        avatarDiv.textContent = '🤖';
+
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'msg-bubble';
+        bubbleDiv.style.padding = '0.5rem 1rem';
+
+        const pEl = document.createElement('p');
+        pEl.className = 'mono-num';
+        pEl.style.fontSize = '1.15rem';
+        pEl.style.letterSpacing = '2px';
+        pEl.style.margin = '0';
+        pEl.style.animation = 'blink 1.4s infinite';
+        pEl.textContent = '...';
+
+        bubbleDiv.appendChild(pEl);
+        typingDiv.append(avatarDiv, bubbleDiv);
         container.appendChild(typingDiv);
         container.scrollTop = container.scrollHeight;
         return id;
@@ -1478,7 +1618,7 @@ A thrilling goal has been scored at **${venue.name}**!
 
         // Post language-changed greeting update (only if conversation just started)
         if (this.fanChatMessages && this.fanChatMessages.children.length <= 1) {
-            this.fanChatMessages.innerHTML = '';
+            this.fanChatMessages.textContent = '';
             this.appendChatMessage(this.fanChatMessages, "🤖", activeStrings.chatIntro, "assistant-msg");
         }
 

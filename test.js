@@ -118,4 +118,89 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         assert.ok(incidentResponse.includes(`${app.telemetry.avgWait}m`));
         assert.ok(!incidentResponse.includes("\\${"));
     });
+
+    await t.test('7. State Transitions and Dynamic Event Simulation', () => {
+        // Create mock DOM structure to prevent ReferenceErrors / TypeErrors
+        const mockElement = {
+            classList: {
+                add: () => {},
+                remove: () => {}
+            },
+            setAttribute: () => {},
+            getAttribute: () => null,
+            innerText: '',
+            style: {},
+            textContent: '',
+            append: () => {},
+            appendChild: () => {},
+            addEventListener: () => {},
+            insertBefore: () => {},
+            children: []
+        };
+
+        global.document = {
+            readyState: 'complete',
+            getElementById: () => mockElement,
+            querySelector: () => mockElement,
+            querySelectorAll: () => [mockElement],
+            createTextNode: () => mockElement,
+            createElement: () => {
+                return {
+                    classList: { add: () => {}, remove: () => {} },
+                    setAttribute: () => {},
+                    getAttribute: () => null,
+                    innerText: '',
+                    style: {},
+                    textContent: '',
+                    append: () => {},
+                    appendChild: () => {},
+                    addEventListener: () => {},
+                    insertBefore: () => {},
+                    children: []
+                };
+            }
+        };
+
+        const testApp = new SmartVenueApp();
+
+        // Assign mock elements
+        testApp.body = mockElement;
+        testApp.fanView = mockElement;
+        testApp.opsView = mockElement;
+        testApp.modeToggleBtn = mockElement;
+        testApp.opsActiveIncidentsText = mockElement;
+        testApp.fanChatInput = mockElement;
+        testApp.fanChatMessages = mockElement;
+        testApp.walletBalanceText = mockElement;
+        testApp.claimCouponBtn = mockElement;
+
+        // Verify initial states
+        assert.strictEqual(testApp.currentMode, 'fan');
+        assert.strictEqual(testApp.currentLanguage, 'en');
+        assert.strictEqual(testApp.activeIncidentsCount, 2);
+
+        // 1. Test Mode Swap / toggleAppMode()
+        testApp.toggleAppMode();
+        assert.strictEqual(testApp.currentMode, 'ops');
+
+        testApp.toggleAppMode();
+        assert.strictEqual(testApp.currentMode, 'fan');
+
+        // 2. Test Language Change / handleLanguageChange()
+        testApp.handleLanguageChange('es');
+        assert.strictEqual(testApp.currentLanguage, 'es');
+
+        testApp.handleLanguageChange('fr');
+        assert.strictEqual(testApp.currentLanguage, 'fr');
+
+        // 3. Test Dynamic Incident Simulation / simulateNewIncident()
+        testApp.simulateNewIncident();
+        assert.strictEqual(testApp.activeIncidentsCount, 3);
+
+        testApp.simulateNewIncident();
+        assert.strictEqual(testApp.activeIncidentsCount, 4);
+
+        // Clean up global.document mock
+        delete global.document;
+    });
 });
