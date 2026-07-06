@@ -133,7 +133,7 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         const createMockElement = (tag) => {
             const attrs = {};
             const classes = new Set();
-            return {
+            const self = {
                 tagName: tag ? tag.toUpperCase() : 'DIV',
                 classList: {
                     add: (cls) => classes.add(cls),
@@ -148,9 +148,25 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
                 removeAttribute: (name) => { delete attrs[name]; },
                 getAttribute: (name) => attrs[name] || null,
                 style: {},
-                textContent: '',
-                innerText: '',
-                append: () => {},
+                _textContent: '',
+                get textContent() {
+                    if (this.children && this.children.length > 0) {
+                        return this.children.map(c => c.textContent).join('');
+                    }
+                    return this._textContent;
+                },
+                set textContent(val) {
+                    this._textContent = val;
+                },
+                get innerText() {
+                    return this.textContent;
+                },
+                set innerText(val) {
+                    this.textContent = val;
+                },
+                append: function(...children) {
+                    children.forEach(child => this.appendChild(child));
+                },
                 appendChild: function(child) {
                     if (this.children) this.children.push(child);
                     return child;
@@ -167,11 +183,22 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
                         // generic catch-all
                     }
                 },
-                insertBefore: () => {},
+                insertBefore: function(newChild, refChild) {
+                    if (this.children) {
+                        const idx = this.children.indexOf(refChild);
+                        if (idx !== -1) {
+                            this.children.splice(idx, 0, newChild);
+                        } else {
+                            this.children.push(newChild);
+                        }
+                    }
+                    return newChild;
+                },
                 querySelector: () => createMockElement('div'),
                 querySelectorAll: () => [],
                 children: []
             };
+            return self;
         };
 
         const createMockLayerBtn = (layerId) => {
@@ -401,6 +428,41 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         assert.strictEqual(testApp.walletBalance, 10);
         assert.strictEqual(testWalletBalanceText.textContent, 10);
         assert.ok(lastAlertMsg.includes("COUPON CLAIMED") || lastAlertMsg.includes("CUPÓN CANJEADO"));
+
+        // 12. Test AI crowd reroute system
+        testApp.triggerOpsReroute();
+        assert.strictEqual(testApp.telemetry.gateD_ppm, 412);
+        assert.strictEqual(testApp.telemetry.avgWait, 4.8);
+        assert.ok(lastAlertMsg.includes("CROWD REROUTING SYSTEM"));
+
+        // 13. Test goal alert dispatcher
+        testApp.fanChatMessages.children = [];
+        testApp.opsChatMessages.children = [];
+        testApp.triggerMatchGoalAlert('usager', 'USA');
+        assert.ok(testApp.fanChatMessages.children.length > 0);
+        assert.ok(testApp.opsChatMessages.children.length > 0);
+        
+        // Assert chat messages text
+        const hasGoalTextFan = testApp.fanChatMessages.children.some(c => c.textContent && c.textContent.includes("GOAL"));
+        const hasGoalTextOps = testApp.opsChatMessages.children.some(c => c.textContent && c.textContent.includes("GOAL REGISTERED"));
+        assert.ok(hasGoalTextFan);
+        assert.ok(hasGoalTextOps);
+
+        // 14. Test resolveKnockoutWinner - Home Team Wins
+        testApp.simMatches.usager.homeScore = 3;
+        testApp.simMatches.usager.awayScore = 1;
+        testApp.simMatches.usager.isFT = false;
+        testApp.resolveKnockoutWinner('usager');
+        assert.strictEqual(testApp.venueData.metlife.score, "3 - 1");
+        assert.strictEqual(testApp.venueData.metlife.status, "COMPLETED");
+
+        // 15. Test resolveKnockoutWinner - Penalty Shootout Tie scenario
+        testApp.simMatches.usager.homeScore = 2;
+        testApp.simMatches.usager.awayScore = 2;
+        testApp.simMatches.usager.isFT = false;
+        testApp.resolveKnockoutWinner('usager');
+        assert.ok(testApp.venueData.metlife.score.includes("2 - 2 ("));
+        assert.ok(testApp.venueData.metlife.score.includes("pen)"));
 
         // Clean up global mocks
         delete global.document;

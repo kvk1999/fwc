@@ -4,6 +4,8 @@
  * Multilingual Fan Assistant (StadiumGuide AI), and Executive Ops Decision AI (ArenaOps).
  */
 
+'use strict';
+
 class SmartVenueApp {
     constructor() {
         // App State
@@ -99,7 +101,95 @@ class SmartVenueApp {
         this.renderLanguageStrings();
     }
 
+    getMatchElement(id) {
+        if (!id) return null;
+        if (!this.matchElements) this.matchElements = {};
+        if (!this.matchElements[id]) {
+            this.matchElements[id] = document.getElementById(id);
+        }
+        return this.matchElements[id];
+    }
+
+    showToast(message, type = 'info') {
+        if (typeof document === 'undefined') return;
+        
+        let container = document.getElementById('toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+        }
+        
+        const toast = document.createElement('div');
+        toast.className = `toast-message ${type}`;
+        
+        let icon = '🔔';
+        if (type === 'success' || message.includes('✅') || message.includes('COUPON') || message.includes('CANJEADO') || message.includes('RÉCLAMÉ')) icon = '🎫';
+        else if (type === 'danger' || message.includes('🚨') || message.includes('⚠️')) icon = '🚨';
+        else if (type === 'warning') icon = '⚠️';
+        else if (message.includes('📡') || message.includes('SYSTEM EXECUTED')) icon = '📡';
+        
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'toast-icon';
+        iconSpan.textContent = icon;
+        
+        const textSpan = document.createElement('span');
+        textSpan.className = 'toast-text';
+        
+        const lines = message.split('\n');
+        lines.forEach((line, index) => {
+            if (index > 0) {
+                textSpan.appendChild(document.createElement('br'));
+            }
+            textSpan.appendChild(document.createTextNode(line));
+        });
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'toast-close';
+        closeBtn.textContent = '×';
+        closeBtn.addEventListener('click', () => {
+            toast.classList.add('toast-fadeout');
+            setTimeout(() => {
+                if (toast.parentNode === container) {
+                    container.removeChild(toast);
+                }
+            }, 300);
+        });
+        
+        toast.appendChild(iconSpan);
+        toast.appendChild(textSpan);
+        toast.appendChild(closeBtn);
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            if (toast.parentNode === container) {
+                toast.classList.add('toast-fadeout');
+                setTimeout(() => {
+                    if (toast.parentNode === container) {
+                        container.removeChild(toast);
+                    }
+                }, 300);
+            }
+        }, 6000);
+    }
+
+    showAlert(message, type = 'info') {
+        this.showToast(message, type);
+        
+        if (typeof alert === 'function') {
+            alert(message);
+        } else if (typeof window !== 'undefined' && typeof window.alert === 'function') {
+            window.alert(message);
+        }
+    }
+
     initElements() {
+        // Countdown cached element
+        this.countdownText = document.getElementById('countdown');
+        this.matchElements = {};
+
         // Core Layout views
         this.body = document.body;
         this.modeToggleBtn = document.getElementById('mode-toggle-btn');
@@ -305,7 +395,7 @@ class SmartVenueApp {
                         pt: "🎫 CUPOM RESGATADO! Seu código de desconto de 15% em Alimentação e Produtos Oficiais foi enviado para o seu e-mail.",
                         ar: "🎫 تم استرداد الكوبون! تم إرسال رمز الخصم ١٥٪ على المأكولات والمشروبات والهدايا التذكارية الرسمية إلى بريدك الإلكتروني."
                     };
-                    alert(alertStrings[this.currentLanguage] || alertStrings.en);
+                    this.showAlert(alertStrings[this.currentLanguage] || alertStrings.en, 'success');
                 }
             });
         }
@@ -687,8 +777,29 @@ class SmartVenueApp {
 
     /* Carbon Calculator Logic with dynamic GC Wallet Balance update */
     calculateEcoTransit() {
-        const distance = parseFloat(this.transitDistance.value) || 1;
-        const method = this.transitMethod.value;
+        // Rigorous input filtering and bounds checks
+        let rawValue = this.transitDistance ? String(this.transitDistance.value) : "1";
+        // Sanitization using regex: allow only digits and at most one decimal point
+        let sanitizedValue = rawValue.replace(/[^0-9.]/g, '');
+        // Handle multiple decimals (only keep the first decimal)
+        const parts = sanitizedValue.split('.');
+        if (parts.length > 2) {
+            sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
+        }
+        
+        let distance = parseFloat(sanitizedValue);
+        if (isNaN(distance) || distance <= 0) {
+            distance = 0;
+        } else if (distance > 500) {
+            distance = 500; // clamp upper bound to 500 miles
+        }
+        
+        // Sync back sanitized value
+        if (this.transitDistance) {
+            this.transitDistance.value = distance.toFixed(1);
+        }
+
+        const method = this.transitMethod ? this.transitMethod.value : 'default';
 
         const { savedEmissions, coinsAwarded } = this.calculateCarbonSavings(distance, method);
 
@@ -785,7 +896,12 @@ class SmartVenueApp {
             const hStr = hours.toString().padStart(2, '0');
             const mStr = minutes.toString().padStart(2, '0');
             const sStr = seconds.toString().padStart(2, '0');
-            document.getElementById('countdown').textContent = `${dStr}d : ${hStr}h : ${mStr}m : ${sStr}s`;
+            if (this.countdownText) {
+                this.countdownText.textContent = `${dStr}d : ${hStr}h : ${mStr}m : ${sStr}s`;
+            } else {
+                const el = document.getElementById('countdown');
+                if (el) el.textContent = `${dStr}d : ${hStr}h : ${mStr}m : ${sStr}s`;
+            }
         }, 1000);
 
         // Dynamic Telemetry drifting every 4 seconds
@@ -1089,7 +1205,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
             const currentVolunteers = parseInt(this.volunteerReadyText.textContent) || 48;
             this.volunteerReadyText.textContent = `${currentVolunteers + 3} Volunteers Active`;
 
-            alert(`✅ DISPATCH NOTIFICATION SENT:\n"${completionMessage}"`);
+            this.showAlert(`✅ DISPATCH NOTIFICATION SENT:\n"${completionMessage}"`, 'success');
         }
     }
 
@@ -1173,7 +1289,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
         this.incidentList.scrollTop = 0;
 
         // Flash message
-        alert(`🚨 NEW VENUE ALERT INGESTED:\n"${template.title}"\nGenAI dispatch options generated.`);
+        this.showAlert(`🚨 NEW VENUE ALERT INGESTED:\n"${template.title}"\nGenAI dispatch options generated.`, 'warning');
     }
 
     triggerOpsReroute() {
@@ -1183,7 +1299,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
         this.telemetry.avgWait = 4.8;
         this.updateOpsDashboard();
 
-        alert("📡 AI CROWD REROUTING SYSTEM EXECUTED:\n- Localized mobile alerts broadcasted successfully.\n- Dynamic signage adjusted at Metro pathways.\n- Gate D line wait time reduced to 4.8 mins!");
+        this.showAlert("📡 AI CROWD REROUTING SYSTEM EXECUTED:\n- Localized mobile alerts broadcasted successfully.\n- Dynamic signage adjusted at Metro pathways.\n- Gate D line wait time reduced to 4.8 mins!", 'info');
     }
 
     startMatchTickerSimulation() {
@@ -1245,9 +1361,9 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
         const match = this.simMatches[matchId];
         if (!match) return;
 
-        // 1. Update multi-venue ticker bar
-        const teamsEl = document.getElementById(match.tickerTeamsId);
-        const timeEl = document.getElementById(match.tickerTimeId);
+        // 1. Update multi-venue ticker bar using cached elements
+        const teamsEl = this.getMatchElement(match.tickerTeamsId);
+        const timeEl = this.getMatchElement(match.tickerTimeId);
         if (teamsEl) {
             teamsEl.textContent = `${match.home} ${match.homeFlag} ${match.homeScore}-${match.awayScore} ${match.awayFlag} ${match.away}`;
         }
@@ -1269,10 +1385,10 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
             }
         }
 
-        // 2. Update bracket modal overlay nodes
-        const bhEl = document.getElementById(match.bracketHomeId);
-        const baEl = document.getElementById(match.bracketAwayId);
-        const btEl = document.getElementById(match.bracketTimeId);
+        // 2. Update bracket modal overlay nodes using cached elements
+        const bhEl = this.getMatchElement(match.bracketHomeId);
+        const baEl = this.getMatchElement(match.bracketAwayId);
+        const btEl = this.getMatchElement(match.bracketTimeId);
         if (bhEl) bhEl.textContent = match.homeScore;
         if (baEl) baEl.textContent = match.awayScore;
         if (btEl) {
@@ -1340,7 +1456,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
 
         // Boldface and style the winner in bracket modal
         const winnerScoreId = winnerName === match.home ? match.bracketHomeId : match.bracketAwayId;
-        const winnerScoreEl = document.getElementById(winnerScoreId);
+        const winnerScoreEl = this.getMatchElement(winnerScoreId);
         if (winnerScoreEl) {
             const teamContainer = winnerScoreEl.parentElement;
             if (teamContainer) {
@@ -1350,7 +1466,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
 
         // Propagate team to Quarter-Final slots if applicable
         if (matchId === 'usager') {
-            const slot = document.getElementById('qf-slot-winner1');
+            const slot = this.getMatchElement('qf-slot-winner1');
             if (slot) {
                 slot.textContent = `${winnerFlag} ${winnerName}`;
                 slot.classList.add('filled-team');
@@ -1358,7 +1474,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
                 slot.style.fontWeight = "700";
             }
         } else if (matchId === 'argfra') {
-            const slot = document.getElementById('qf-slot-winner2');
+            const slot = this.getMatchElement('qf-slot-winner2');
             if (slot) {
                 slot.textContent = `${winnerFlag} ${winnerName}`;
                 slot.classList.add('filled-team');
