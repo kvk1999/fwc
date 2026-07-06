@@ -160,6 +160,7 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
                 };
             }
         };
+        global.alert = () => {};
 
         const testApp = new SmartVenueApp();
 
@@ -200,7 +201,8 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         testApp.simulateNewIncident();
         assert.strictEqual(testApp.activeIncidentsCount, 4);
 
-        // Clean up global.document mock
+        // Clean up global mocks
         delete global.document;
+        delete global.alert;
     });
 });
