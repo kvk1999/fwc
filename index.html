@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FWC 2026 SmartVenue Hub - GenAI Stadium Operations & Fan Companion</title>
+    <meta name="description" content="State-of-the-art GenAI-enabled stadium experience and real-time operations console for the FIFA World Cup 2026. Empowering fans and organizers.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body class="dark-mode">
+    <!-- Header Area -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <div class="logo-icon-container">
+                    <!-- Custom SVG FIFA-inspired Trophy / Arena Logo -->
+                    <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" stroke="url(#goldGradient)" stroke-width="4" stroke-dasharray="10 4"/>
+                        <path d="M50 25 L65 45 L55 45 L55 70 L45 70 L45 45 L35 45 Z" fill="url(#goldGradient)"/>
+                        <circle cx="50" cy="30" r="10" fill="var(--cyan-neon)"/>
+                        <defs>
+                            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FFD700" />
+                                <stop offset="100%" stop-color="#FFA500" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>FWC 2026</h1>
+                    <span>SmartVenue Hub</span>
+                </div>
+            </div>
+
+            <!-- Global Configurations -->
+            <div class="header-controls">
+                <div class="control-group">
+                    <label for="venue-select" class="sr-only">Select Venue</label>
+                    <select id="venue-select" class="premium-select">
+                        <option value="metlife" selected>MetLife Stadium (New York/NJ)</option>
+                        <option value="sofi">SoFi Stadium (Los Angeles)</option>
+                        <option value="azteca">Estadio Azteca (Mexico City)</option>
+                        <option value="att">AT&T Stadium (Dallas)</option>
+                        <option value="mercedes">Mercedes-Benz Stadium (Atlanta)</option>
+                        <option value="hardrock">Hard Rock Stadium (Miami)</option>
+                        <option value="bcplace">BC Place (Vancouver)</option>
+                        <option value="arrowhead">Arrowhead Stadium (Kansas City)</option>
+                        <option value="lumen">Lumen Field (Seattle)</option>
+                        <option value="levis">Levi's Stadium (San Francisco Bay Area)</option>
+                        <option value="nrg">NRG Stadium (Houston)</option>
+                        <option value="lincoln">Lincoln Financial Field (Philadelphia)</option>
+                        <option value="gillette">Gillette Stadium (Boston)</option>
+                        <option value="bmo">BMO Field (Toronto)</option>
+                        <option value="bbva">Estadio BBVA (Monterrey)</option>
+                        <option value="akron">Estadio Akron (Guadalajara)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="lang-select" class="sr-only">Select Language</label>
+                    <select id="lang-select" class="premium-select">
+                        <option value="en">English (US)</option>
+                        <option value="es">Español (ES)</option>
+                        <option value="fr">Français (FR)</option>
+                        <option value="pt">Português (PT)</option>
+                        <option value="ar">العربية (AR)</option>
+                    </select>
+                </div>
+
+                <!-- Toggle Bracket modal button -->
+                <button id="bracket-toggle-btn" class="action-btn gold-btn header-bracket-btn">
+                    🏆 Bracket & Standings
+                </button>
+
+                <!-- Mode Toggler Switch -->
+                <div class="mode-toggler-container">
+                    <span class="mode-label active" id="label-fan">Fan Portal</span>
+                    <button id="mode-toggle-btn" class="toggle-switch-btn" aria-label="Toggle user modes">
+                        <span class="toggle-slider"></span>
+                    </button>
+                    <span class="mode-label" id="label-ops">V-Ops Control</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container Layout -->
+    <main class="app-viewport">
+        
+        <!-- Live Countdown & Status Ribbon -->
+        <section class="live-match-ribbon" id="match-ribbon">
+            <div class="ribbon-content">
+                <div class="match-teams">
+                    <span class="country-badge">USA <span class="flag-icon">🇺🇸</span></span>
+                    <span class="vs-text">VS</span>
+                    <span class="country-badge">GERMANY <span class="flag-icon">🇩🇪</span></span>
+                    <span class="match-score-pill mono-num" id="ribbon-score">2 - 1</span>
+                    <span class="match-time-pill live-badge" id="ribbon-time">88'</span>
+                </div>
+                <div class="match-info">
+                    <span class="info-badge live">LIVE FEEDS</span>
+                    <span class="venue-indicator" id="current-venue-text">MetLife Stadium • Round of 16</span>
+                    <span class="attendance-counter"><strong class="mono-num" id="live-attendance">81,432</strong> Fans Checked In</span>
+                </div>
+                <div class="match-countdown">
+                    <span class="countdown-label" id="countdown-label-text">Kickoff (Other Matches):</span>
+                    <span class="countdown-timer mono-num" id="countdown">01d : 03h : 38m : 12s</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Tournament Multi-Match Ticker Bar -->
+        <section class="tournament-ticker-bar">
+            <div class="ticker-wrapper">
+                <div class="ticker-title">LIVE MULTI-VENUE FEEDS (July 6, 2026):</div>
+                <div class="ticker-scroll" id="live-ticker-matches">
+                    <div class="ticker-match-card active-match">
+                        <span class="t-city">LA (SoFi)</span>
+                        <span class="t-teams" id="ticker-teams-argfra">ARG 🇦🇷 1-1 🇫🇷 FRA</span>
+                        <span class="t-time blinking" id="ticker-time-argfra">74'</span>
+                    </div>
+                    <div class="ticker-match-card active-match">
+                        <span class="t-city">NY (MetLife)</span>
+                        <span class="t-teams" id="ticker-teams-usager">USA 🇺🇸 2-1 🇩🇪 GER</span>
+                        <span class="t-time blinking" id="ticker-time-usager">88'</span>
+                    </div>
+                    <div class="ticker-match-card active-match">
+                        <span class="t-city">MEX (Azteca)</span>
+                        <span class="t-teams" id="ticker-teams-mexeng">MEX 🇲🇽 0-0 🏴󠁧󠁢󠁥󠁮󠁧󠁿 ENG</span>
+                        <span class="t-time" id="ticker-time-mexeng">HT</span>
+                    </div>
+                    <div class="ticker-match-card completed-match">
+                        <span class="t-city">DAL (AT&T)</span>
+                        <span class="t-teams">BRA 🇧🇷 2-1 🇪🇸 ESP</span>
+                        <span class="t-time">FT</span>
+                    </div>
+                    <div class="ticker-match-card completed-match">
+                        <span class="t-city">ATL (Mercedes)</span>
+                        <span class="t-teams">ITA 🇮🇹 1-0 🇵🇹 POR</span>
+                        <span class="t-time">FT</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- FAN MODE CONTAINER                             -->
+        <!-- ============================================== -->
+        <div id="fan-mode-view" class="mode-container active">
+            <div class="mode-grid">
+                
+                <!-- Left: Dynamic Navigation & Sustainability -->
+                <div class="grid-col-left">
+                    
+                    <!-- Premium Interactive Stadium Map Card -->
+                    <div class="premium-card glassmorphic" id="fan-map-card">
+                        <div class="card-header">
+                            <div class="header-title-wrapper">
+                                <svg class="card-icon cyan-glow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                                    <line x1="9" y1="3" x2="9" y2="18"/>
+                                    <line x1="15" y1="6" x2="15" y2="21"/>
+                                </svg>
+                                <h2>Interactive Wayfinding & Facilities</h2>
+                            </div>
+                            <div class="card-badges">
+                                <span class="custom-badge cyan">Stadium Map v2.6</span>
+                            </div>
+                        </div>
+                        
+                        <div class="map-layer-controls">
+                            <button class="layer-btn active" data-layer="seating">Seating Zones</button>
+                            <button class="layer-btn" data-layer="gates">Gates & Parking</button>
+                            <button class="layer-btn" data-layer="concessions">Food & Drinks</button>
+                            <button class="layer-btn" data-layer="amenities">Accessibility & Restrooms</button>
+                        </div>
+
+                        <!-- Clickable Custom SVG Stadium Map -->
+                        <div class="stadium-map-wrapper">
+                            <svg id="interactive-stadium-svg" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Background grid effects -->
+                                <defs>
+                                    <radialGradient id="stadiumGlow" cx="50%" cy="50%" r="50%">
+                                        <stop offset="0%" stop-color="var(--cyan-neon-dim)" stop-opacity="0.3" />
+                                        <stop offset="100%" stop-color="rgba(11,15,25,0)" />
+                                    </radialGradient>
+                                </defs>
+                                <rect width="100%" height="100%" fill="url(#stadiumGlow)" />
+
+                                <!-- Outer Parking / Rings -->
+                                <circle cx="300" cy="200" r="180" class="map-ring parking-ring" />
+                                <circle cx="300" cy="200" r="150" class="map-ring perimeter-ring" />
+
+                                <!-- Outer Stadium Shell -->
+                                <path d="M 180,200 A 120,100 0 1,1 420,200 A 120,100 0 1,1 180,200 Z" class="stadium-shell" />
+                                
+                                <!-- Outer Gates (Interactive Group) -->
+                                <g class="map-layer" id="layer-gates" style="display:none;">
+                                    <circle cx="300" cy="50" r="14" class="map-interactive gate-node" id="gate-1" data-info="Gate A (North Entrance) - Smooth Flow. Wait time: 2 mins." />
+                                    <text x="300" y="54" class="gate-label">A</text>
+
+                                    <circle cx="450" cy="200" r="14" class="map-interactive gate-node" id="gate-2" data-info="Gate B (East Entrance) - Moderate queue. Wait time: 8 mins." />
+                                    <text x="450" y="204" class="gate-label">B</text>
+
+                                    <circle cx="300" cy="350" r="14" class="map-interactive gate-node" id="gate-3" data-info="Gate C (South Entrance) - Smooth Flow. Wait time: 3 mins." />
+                                    <text x="300" y="354" class="gate-label">C</text>
+
+                                    <circle cx="150" cy="200" r="14" class="map-interactive gate-node warning" id="gate-4" data-info="Gate D (West Entrance) - HEAVY CONGESTION. Rerouting recommended. Wait time: 22 mins." />
+                                    <text x="150" y="204" class="gate-label">D</text>
+                                </g>
+
+                                <!-- Seating Sectors (Interactive Path Sections) -->
+                                <g class="map-layer active-layer" id="layer-seating">
+                                    <!-- Top Left Sector -->
+                                    <path d="M 220,180 A 80,60 0 0,1 300,140 L 300,90 A 130,110 0 0,0 170,180 Z" class="map-interactive sector-path s-northwest" data-info="Category 2 - Section 101-105. Access via Gate A." />
+                                    <!-- Top Right Sector -->
+                                    <path d="M 300,140 A 80,60 0 0,1 380,180 L 430,180 A 130,110 0 0,0 300,90 Z" class="map-interactive sector-path s-northeast" data-info="Category 1 - Section 106-110 (Premium Midfield). Access via Gate B." />
+                                    <!-- Bottom Right Sector -->
+                                    <path d="M 380,220 A 80,60 0 0,1 300,260 L 300,310 A 130,110 0 0,0 430,220 Z" class="map-interactive sector-path s-southeast" data-info="Category 2 - Section 111-115. Access via Gate B or C." />
+                                    <!-- Bottom Left Sector -->
+                                    <path d="M 300,260 A 80,60 0 0,1 220,220 L 170,220 A 130,110 0 0,0 300,310 Z" class="map-interactive sector-path s-southwest" data-info="Category 3 - Section 116-120. Access via Gate D (Congested)." />
+                                </g>
+
+                                <!-- Concessions (Interactive Icons) -->
+                                <g class="map-layer" id="layer-concessions" style="display:none;">
+                                    <circle cx="210" cy="130" r="10" class="map-interactive concession-node food" id="food-1" data-info="Arena Tacos & Nachos • Section 102 • Wait time: ~15 mins. Wheelchair Accessible Counter available." />
+                                    <circle cx="390" cy="130" r="10" class="map-interactive concession-node drink" id="drink-1" data-info="FIFA Fan Zone Bar • Section 108 • Wait time: ~5 mins. Eco-cups available." />
+                                    <circle cx="390" cy="270" r="10" class="map-interactive concession-node food" id="food-2" data-info="MetLife Burger Grill • Section 113 • Wait time: ~12 mins. Digital Pre-ordering enabled." />
+                                    <circle cx="210" cy="270" r="10" class="map-interactive concession-node merch" id="merch-1" data-info="Official FIFA World Cup Megastore • Section 118 • Wait time: ~8 mins. Card payments only." />
+                                </g>
+
+                                <!-- Amenities (Accessibility, Restrooms) -->
+                                <g class="map-layer" id="layer-amenities" style="display:none;">
+                                    <circle cx="250" cy="110" r="10" class="map-interactive amenity-node restroom" id="restroom-1" data-info="Main Restrooms (Male/Female) • Sec 103 • Wait: 2 mins. Fully Accessible." />
+                                    <circle cx="350" cy="110" r="10" class="map-interactive amenity-node medical" id="medical-1" data-info="First Aid & Medical Station • Sec 107 • Wait: None. Equipped with translation staff." />
+                                    <circle cx="350" cy="290" r="10" class="map-interactive amenity-node restroom" id="restroom-2" data-info="Family Restroom & Baby Care • Sec 114 • Wait: 4 mins." />
+                                    <circle cx="250" cy="290" r="10" class="map-interactive amenity-node accessibility" id="access-1" data-info="Wheelchair Assistance & Lift Station • Sec 119. Free wheelchair rental and volunteer escort." />
+                                </g>
+
+                                <!-- Pitch / Center Field -->
+                                <rect x="250" y="160" width="100" height="80" rx="4" class="stadium-pitch" />
+                                <circle cx="300" cy="200" r="16" class="pitch-center" />
+                                <line x1="300" y1="160" x2="300" y2="240" stroke="#ffffff" stroke-width="2" />
+                            </svg>
+                        </div>
+                        
+                        <div class="map-legend">
+                            <span class="legend-item"><span class="legend-color gate"></span>Gate Node</span>
+                            <span class="legend-item"><span class="legend-color sector"></span>Seating Sector</span>
+                            <span class="legend-item"><span class="legend-color concession"></span>Concession Point</span>
+                            <span class="legend-item"><span class="legend-color facility"></span>Accessibility/Restroom</span>
+                        </div>
+
+                        <!-- Map Interactive Detail Box -->
+                        <div class="interactive-detail-box" id="map-detail-panel">
+                            <div class="detail-icon-wrapper">
+                                <svg class="detail-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="16" x2="12" y2="12"/>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                </svg>
+                            </div>
+                            <div class="detail-content">
+                                <h3 id="detail-title">Tap/Click Any Map Element</h3>
+                                <p id="detail-desc">Hover over or tap sectors, gates, restrooms, or eateries to view real-time operations, accessibility ratings, and current line queues.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Eco-Transit Planner & Sustainability Dashboard -->
+                    <div class="premium-card glassmorphic" id="eco-transit-card">
+                        <div class="card-header">
+                            <div class="header-title-wrapper">
+                                <svg class="card-icon emerald-glow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                    <path d="M12 8v8"/>
+                                    <path d="M8 12h8"/>
+                                </svg>
+                                <h2>Eco-Transit Planner</h2>
+                            </div>
+                            <div class="card-badges animate-pulse-green">
+                                <span class="custom-badge green">FIFA Green Initiative</span>
+                            </div>
+                        </div>
+
+                        <div class="transit-planner-container">
+                            <div class="transit-inputs">
+                                <div class="form-group">
+                                    <label for="transit-method">How are you traveling?</label>
+                                    <select id="transit-method" class="premium-select select-full">
+                                        <option value="metro">⚡ Metro / Electric Rail (92% CO2 Saved)</option>
+                                        <option value="shuttle">🚌 Tournament Electric Shuttle (78% CO2 Saved)</option>
+                                        <option value="carpool">🚗 Carpooling (3+ people) (45% CO2 Saved)</option>
+                                        <option value="rideshare_ev">🚕 Rideshare (Electric EV) (60% CO2 Saved)</option>
+                                        <option value="gas_car">🚘 Solo Combustion Engine Car (0% Saved)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="transit-distance">Approximate travel distance (miles):</label>
+                                    <input type="number" id="transit-distance" class="premium-input input-full" value="12" min="1" max="150">
+                                </div>
+                                <button id="calculate-transit-btn" class="action-btn green-btn">Calculate CO2 Savings</button>
+                            </div>
+
+                            <div class="transit-results" id="transit-results-box">
+                                <div class="result-metric">
+                                    <span class="metric-desc">Carbon Emissions Saved</span>
+                                    <span class="metric-val text-green mono-num" id="carbon-saved">14.2 lbs CO2</span>
+                                </div>
+                                <div class="result-metric reward-glowing">
+                                    <span class="metric-desc">Green Coins Earned</span>
+                                    <span class="metric-val text-gold mono-num" id="coins-earned">+28 GC</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fan Green Wallet Widget -->
+                        <div class="green-wallet-banner">
+                            <div class="wallet-icon-holder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="wallet-coin-icon">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 6v12"/>
+                                    <path d="M17 12H7"/>
+                                </svg>
+                            </div>
+                            <div class="wallet-text">
+                                <p>My FIFA Eco-Wallet Balance</p>
+                                <h4><strong class="mono-num" id="wallet-balance">140</strong> Green Coins (GC)</h4>
+                            </div>
+                            <div class="wallet-actions">
+                                <button id="claim-coupon-btn" class="redeem-btn" disabled>Redeem (Min: 200 GC)</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+                <!-- Right: Multilingual GenAI Fan Assistant -->
+                <div class="grid-col-right">
+                    <div class="premium-card glassmorphic chat-card" id="fan-chat-panel">
+                        <div class="card-header chat-header">
+                            <div class="chat-status-wrapper">
+                                <div class="pulse-indicator"></div>
+                                <div class="chat-agent-info">
+                                    <h2>StadiumGuide AI</h2>
+                                    <span>2026 Multilingual Virtual Assistant</span>
+                                </div>
+                            </div>
+                            <span class="model-badge">Gemini-Powered</span>
+                        </div>
+
+                        <!-- Chat messages log -->
+                        <div class="chat-messages-container" id="fan-chat-messages">
+                            <!-- System Greeting message -->
+                            <div class="message assistant-msg">
+                                <div class="msg-avatar font-awesome-avatar">🤖</div>
+                                <div class="msg-bubble">
+                                    <p>Hello! Welcome to the FIFA World Cup 2026. I am **StadiumGuide AI**, your virtual host. 🏟️✨</p>
+                                    <p>I can help you translate languages, find your seating row, calculate electric shuttle times, locate wheelchair accessible lifts, or see menu options at concessions. How can I make your stadium experience spectacular today?</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Action Suggestion Prompts -->
+                        <div class="chat-suggestions">
+                            <button class="suggest-chip" data-prompt="Where is the nearest wheelchair accessible restroom and lift to Section 108?">♿ Restroom & Lift Accessibility</button>
+                            <button class="suggest-chip" data-prompt="How do I take the electric shuttle back to parking lot C?">🚌 Electric Shuttle Route</button>
+                            <button class="suggest-chip" data-prompt="What matches are playing today July 6, 2026?">📅 Today's Match Schedule</button>
+                            <button class="suggest-chip" data-prompt="¿Dónde puedo canjear mis Green Coins en el estadio?">🇪🇸 Canjear Green Coins (ES)</button>
+                        </div>
+
+                        <!-- Message Input area -->
+                        <div class="chat-input-bar">
+                            <form id="fan-chat-form" class="chat-form">
+                                <input type="text" id="fan-chat-input" class="premium-chat-input" placeholder="Ask StadiumGuide AI..." required autocomplete="off">
+                                <button type="submit" id="fan-chat-submit" class="chat-send-btn" aria-label="Send message">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <line x1="22" y1="2" x2="11" y2="13"/>
+                                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- ============================================== -->
+        <!-- VENUE OPERATIONS (V-OPS) CONTROL CONTAINER      -->
+        <!-- ============================================== -->
+        <div id="ops-mode-view" class="mode-container">
+            <!-- Grid layout for the main Operations control board -->
+            <div class="mode-grid">
+                
+                <!-- Left: Telemetry Control Room -->
+                <div class="grid-col-left">
+                    
+                    <!-- Core Operational Metrics Grid -->
+                    <div class="metrics-grid">
+                        <!-- KPI Card 1: Live Attendance -->
+                        <div class="metric-card glassmorphic">
+                            <div class="m-card-header">
+                                <span>Occupancy Rate</span>
+                                <span class="m-card-trend text-green">Optimal</span>
+                            </div>
+                            <div class="m-card-body">
+                                <h3 class="mono-num" id="ops-occupancy">93.4%</h3>
+                                <div class="meter-bar">
+                                    <div class="meter-fill green" style="width: 93.4%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- KPI Card 2: Avg Gate Wait -->
+                        <div class="metric-card glassmorphic">
+                            <div class="m-card-header">
+                                <span>Avg Gate Queue</span>
+                                <span class="m-card-trend text-orange">+2m delay</span>
+                            </div>
+                            <div class="m-card-body">
+                                <h3 class="mono-num" id="ops-avg-wait">8.7 min</h3>
+                                <div class="meter-bar">
+                                    <div class="meter-fill orange" style="width: 55%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- KPI Card 3: Sustainability Index -->
+                        <div class="metric-card glassmorphic">
+                            <div class="m-card-header">
+                                <span>Grid Savings (Sust.)</span>
+                                <span class="m-card-trend text-green">+18.5% VS baseline</span>
+                            </div>
+                            <div class="m-card-body">
+                                <h3 class="mono-num" id="ops-sustainability-score">86.2%</h3>
+                                <div class="meter-bar">
+                                    <div class="meter-fill emerald" style="width: 86.2%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- KPI Card 4: Incident Status -->
+                        <div class="metric-card glassmorphic">
+                            <div class="m-card-header">
+                                <span>Open Alert Tickets</span>
+                                <span class="m-card-trend text-yellow">Active Dispatch</span>
+                            </div>
+                            <div class="m-card-body">
+                                <h3 class="mono-num" id="ops-active-incidents">2</h3>
+                                <div class="meter-bar">
+                                    <div class="meter-fill yellow" style="width: 40%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Gate Queue Heatmap Vector -->
+                    <div class="premium-card glassmorphic" id="ops-heatmap-card">
+                        <div class="card-header">
+                            <div class="header-title-wrapper">
+                                <svg class="card-icon cyan-glow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="9" y1="3" x2="9" y2="21"/>
+                                    <line x1="15" y1="3" x2="15" y2="21"/>
+                                    <line x1="3" y1="9" x2="21" y2="9"/>
+                                    <line x1="3" y1="15" x2="21" y2="15"/>
+                                </svg>
+                                <h2>Real-Time Gate Telemetry & Crowd Congestion Map</h2>
+                            </div>
+                            <div class="card-badges animate-pulse-cyan">
+                                <span class="custom-badge cyan">LIVE RADAR</span>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Telemetry Dashboard details -->
+                        <div class="gate-telemetry-panel">
+                            <div class="gate-progress-bars">
+                                <!-- Gate A -->
+                                <div class="gate-telemetry-row">
+                                    <div class="t-row-desc">
+                                        <span class="node-label-small">Gate A (North)</span>
+                                        <span class="node-stats mono-num" id="gate-a-stats">288 ppm • Normal Flow</span>
+                                    </div>
+                                    <div class="telemetry-bar-bg">
+                                        <div class="telemetry-bar-fill green" style="width: 32%" id="gate-a-bar"></div>
+                                    </div>
+                                </div>
+                                <!-- Gate B -->
+                                <div class="gate-telemetry-row">
+                                    <div class="t-row-desc">
+                                        <span class="node-label-small">Gate B (East)</span>
+                                        <span class="node-stats mono-num" id="gate-b-stats">512 ppm • Moderate Flow</span>
+                                    </div>
+                                    <div class="telemetry-bar-bg">
+                                        <div class="telemetry-bar-fill yellow" style="width: 58%" id="gate-b-bar"></div>
+                                    </div>
+                                </div>
+                                <!-- Gate C -->
+                                <div class="gate-telemetry-row">
+                                    <div class="t-row-desc">
+                                        <span class="node-label-small">Gate C (South)</span>
+                                        <span class="node-stats mono-num" id="gate-c-stats">144 ppm • Light Flow</span>
+                                    </div>
+                                    <div class="telemetry-bar-bg">
+                                        <div class="telemetry-bar-fill green" style="width: 18%" id="gate-c-bar"></div>
+                                    </div>
+                                </div>
+                                <!-- Gate D -->
+                                <div class="gate-telemetry-row">
+                                    <div class="t-row-desc">
+                                        <span class="node-label-small text-danger">Gate D (West)</span>
+                                        <span class="node-stats mono-num text-danger" id="gate-d-stats">1,142 ppm • CRITICAL</span>
+                                    </div>
+                                    <div class="telemetry-bar-bg">
+                                        <div class="telemetry-bar-fill red" style="width: 94%" id="gate-d-bar"></div>
+                                    </div>
+                                </div>
+                                <span class="text-caption">*ppm: People per Minute crossing scanners</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Controls in Telemetry Room -->
+                        <div class="telemetry-action-footer">
+                            <p class="footer-alert-desc"><strong class="text-danger">⚠️ Bottleneck Triggered at Gate D:</strong> GenAI crowd rerouting active. Broadcast messages dispatched to 42 surrounding volunteer tablets.</p>
+                            <button id="trigger-reroute-btn" class="action-btn red-btn">Deploy AI Redirect Protocols</button>
+                        </div>
+                    </div>
+
+                    <!-- Sustainability Monitor & Eco Control System -->
+                    <div class="premium-card glassmorphic" id="sustainability-ops-card">
+                        <div class="card-header">
+                            <div class="header-title-wrapper">
+                                <svg class="card-icon emerald-glow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 1 8a7 7 0 0 1-9 10Z"/>
+                                    <path d="M9 22a1 1 0 0 1-1-1v-3a1 1 0 0 0-1-1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h5"/>
+                                </svg>
+                                <h2>Sustainable Arena Operations Command</h2>
+                            </div>
+                            <div class="card-badges">
+                                <span class="custom-badge green">Zero-Waste Goal</span>
+                            </div>
+                        </div>
+
+                        <div class="sustainability-ops-grid">
+                            <!-- Smart Waste Sensor Levels -->
+                            <div class="waste-sensor-monitor">
+                                <h3>🔋 Smart Bin Fill Sensors (Live)</h3>
+                                <div class="bin-grid">
+                                    <div class="bin-card">
+                                        <div class="bin-title">Sector 102 (Gate A)</div>
+                                        <div class="bin-gauge">
+                                            <div class="bin-fill green" style="height: 38%" id="bin-1-fill"></div>
+                                            <span class="bin-percent" id="bin-1-text">38%</span>
+                                        </div>
+                                    </div>
+                                    <div class="bin-card">
+                                        <div class="bin-title">Sector 108 (Food Plz)</div>
+                                        <div class="bin-gauge">
+                                            <div class="bin-fill yellow" style="height: 72%" id="bin-2-fill"></div>
+                                            <span class="bin-percent" id="bin-2-text">72%</span>
+                                        </div>
+                                    </div>
+                                    <div class="bin-card warning">
+                                        <div class="bin-title">Sector 114 (Gate D)</div>
+                                        <div class="bin-gauge">
+                                            <div class="bin-fill red animate-pulse-red" style="height: 89%" id="bin-3-fill"></div>
+                                            <span class="bin-percent text-danger" id="bin-3-text">89%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Energy Grid Metrics -->
+                            <div class="energy-solar-monitor">
+                                <h3>☀️ Solar & Clean Energy Grid</h3>
+                                <div class="energy-circle-container">
+                                    <!-- Dynamic clean energy metrics -->
+                                    <div class="metric-block">
+                                        <span class="block-lbl">Solar Ingestion</span>
+                                        <span class="block-val text-green mono-num" id="solar-in">485 kW</span>
+                                    </div>
+                                    <div class="metric-block">
+                                        <span class="block-lbl">Rainwater Harvested</span>
+                                        <span class="block-val text-cyan mono-num" id="rain-harvest">4,280 Gal</span>
+                                    </div>
+                                </div>
+                                <div class="energy-control-actions">
+                                    <button class="small-ops-btn active" id="eco-power-btn">AI Intelligent HVAC Eco Mode</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right: Operations Dispatcher & Executive Decision AI -->
+                <div class="grid-col-right">
+                    
+                    <!-- Real-Time Volunteer Coordinator & GenAI Incident Dispatcher -->
+                    <div class="premium-card glassmorphic" id="dispatch-panel">
+                        <div class="card-header">
+                            <div class="header-title-wrapper">
+                                <svg class="card-icon gold-glow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="4" width="20" height="16" rx="2" ry="2"/>
+                                    <path d="M16 2v4M8 2v4M2 10h20"/>
+                                </svg>
+                                <h2>Smart Dispatcher & Volunteers</h2>
+                            </div>
+                            <span class="custom-badge gold" id="volunteer-ready-count">48 Volunteers Active</span>
+                        </div>
+
+                        <div class="dispatch-container">
+                            <!-- Incident Queue -->
+                            <div class="incident-queue" id="incident-list">
+                                <!-- Incident 1 -->
+                                <div class="incident-item priority-high" id="inc-1">
+                                    <div class="inc-meta">
+                                        <span class="inc-badge p-red">CRITICAL</span>
+                                        <span class="inc-time mono-num">18:14</span>
+                                    </div>
+                                    <h4 class="inc-title">Gate D Congestion Reroute Required</h4>
+                                    <p class="inc-desc">Crowd levels peaked over 1,100 ppm. High queue time causing delays.</p>
+                                    <div class="inc-ai-action">
+                                        <strong>GenAI Dispatch recommendation:</strong> 8 Spanish/French translation escorts and 5 venue crowd fluid guides ready to re-route via Gate B.
+                                        <button class="dispatch-btn" onclick="app.dispatchVolunteers('inc-1', 'Deployed crowd marshals to Gate D to initiate secondary screening pathways.')">Execute Dispatch Plan</button>
+                                    </div>
+                                </div>
+
+                                <!-- Incident 2 -->
+                                <div class="incident-item priority-medium" id="inc-2">
+                                    <div class="inc-meta">
+                                        <span class="inc-badge p-yellow">WARNING</span>
+                                        <span class="inc-time mono-num">18:18</span>
+                                    </div>
+                                    <h4 class="inc-title">Wheelchair Shuttle Assistance Request</h4>
+                                    <p class="inc-desc">Family requires wheelchair shuttle escort from Section 119 lift to Metro link.</p>
+                                    <div class="inc-ai-action">
+                                        <strong>GenAI Dispatch recommendation:</strong> Assign nearest Volunteer ID #409 (equipped with wheelchair kit, speaking EN/DE).
+                                        <button class="dispatch-btn" onclick="app.dispatchVolunteers('inc-2', 'Volunteer #409 dispatched to Lift Section 119 with mobility chair.')">Assign Volunteer #409</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="dispatch-sim-controls">
+                                <button id="simulate-incident-btn" class="action-btn purple-btn">Simulate New Live Incident Event</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Executive Decision Support (ArenaOps AI) Chat Console -->
+                    <div class="premium-card glassmorphic chat-card" id="ops-chat-panel">
+                        <div class="card-header chat-header bg-gold-border">
+                            <div class="chat-status-wrapper">
+                                <div class="pulse-indicator pulse-gold"></div>
+                                <div class="chat-agent-info">
+                                    <h2>ArenaOps Decision Support AI</h2>
+                                    <span>Real-Time Executive Intelligence</span>
+                                </div>
+                            </div>
+                            <span class="model-badge model-gold">Gemini 3.5 Pro</span>
+                        </div>
+
+                        <!-- Chat log -->
+                        <div class="chat-messages-container" id="ops-chat-messages">
+                            <div class="message assistant-msg ops">
+                                <div class="msg-avatar font-awesome-avatar gold-bg">📊</div>
+                                <div class="msg-bubble">
+                                    <p>Welcome to **ArenaOps Intelligence Console** for FIFA World Cup 2026. 🎛️🖥️</p>
+                                    <p>I am your Generative AI Decision Support Officer. I have complete real-time telemetry ingestion from sensors, gates, ticket systems, waste bins, and weather services.</p>
+                                    <p>You can ask me to draft crowd control alerts, compile stadium operations briefs, map sustainability reports, or coordinate volunteers. Try one of the executive actions below or type your custom inquiry.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Suggestions -->
+                        <div class="chat-suggestions font-ops-chips">
+                            <button class="suggest-chip-ops" data-prompt="Analyze Gate D congestion and draft localized volunteer broadcast instructions.">Draft Gate D Reroute Dispatch</button>
+                            <button class="suggest-chip-ops" data-prompt="Give me a status summary of all active matches today July 6, 2026.">Today's Live Matches Report</button>
+                            <button class="suggest-chip-ops" data-prompt="Create a brief of currently active stadium incidents and staffing status.">Active Incidents Brief</button>
+                        </div>
+
+                        <!-- Chat input -->
+                        <div class="chat-input-bar">
+                            <form id="ops-chat-form" class="chat-form">
+                                <input type="text" id="ops-chat-input" class="premium-chat-input input-gold" placeholder="Ask ArenaOps AI..." required autocomplete="off">
+                                <button type="submit" id="ops-chat-submit" class="chat-send-btn send-gold" aria-label="Send ops query">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <line x1="22" y1="2" x2="11" y2="13"/>
+                                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Interactive Glassmorphic Tournament Bracket Modal Overlay -->
+    <div class="modal-overlay" id="bracket-modal">
+        <div class="modal-card glassmorphic">
+            <div class="modal-header">
+                <div class="modal-title-area">
+                    <span class="gold-trophy">🏆</span>
+                    <div>
+                        <h2>FIFA World Cup 2026 Knockout Bracket</h2>
+                        <p>Round of 16 Phase • Live Telemetry Ingestion (July 6, 2026)</p>
+                    </div>
+                </div>
+                <button class="close-modal-btn" id="close-bracket-btn">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Bracket Grid representation -->
+                <div class="bracket-scroll-container">
+                    <div class="bracket-tree">
+                        <!-- Round of 16 Columns -->
+                        <div class="bracket-round r16">
+                            <h3>Round of 16</h3>
+                            
+                            <div class="bracket-matchup completed">
+                                <div class="bracket-team winner">🇧🇷 BRAZIL <span class="score mono-num">2</span></div>
+                                <div class="bracket-team">🇪🇸 SPAIN <span class="score mono-num">1</span></div>
+                                <div class="match-meta">DAL (AT&T) • July 4</div>
+                            </div>
+
+                            <div class="bracket-matchup completed">
+                                <div class="bracket-team winner">🇮🇹 ITALY <span class="score mono-num">1</span></div>
+                                <div class="bracket-team">🇵🇹 PORTUGAL <span class="score mono-num">0</span></div>
+                                <div class="match-meta">ATL (Mercedes) • July 4</div>
+                            </div>
+
+                            <div class="bracket-matchup active">
+                                <div class="bracket-team">🇺🇸 USA <span class="score mono-num" id="bracket-score-usa">2</span></div>
+                                <div class="bracket-team">🇩🇪 GERMANY <span class="score mono-num" id="bracket-score-ger">1</span></div>
+                                <span class="live-tag" id="bracket-time-usager">LIVE 88'</span>
+                                <div class="match-meta">NY (MetLife) • July 6</div>
+                            </div>
+
+                            <div class="bracket-matchup active">
+                                <div class="bracket-team">🇦🇷 ARGENTINA <span class="score mono-num" id="bracket-score-arg">1</span></div>
+                                <div class="bracket-team">🇫🇷 FRANCE <span class="score mono-num" id="bracket-score-fra">1</span></div>
+                                <span class="live-tag" id="bracket-time-argfra">LIVE 74'</span>
+                                <div class="match-meta">LA (SoFi) • July 6</div>
+                            </div>
+
+                            <div class="bracket-matchup active">
+                                <div class="bracket-team">🇲🇽 MEXICO <span class="score mono-num" id="bracket-score-mex">0</span></div>
+                                <div class="bracket-team">🏴󠁧󠁢󠁥󠁮󠁧󠁿 ENGLAND <span class="score mono-num" id="bracket-score-eng">0</span></div>
+                                <span class="live-tag halftime" id="bracket-time-mexeng">HT</span>
+                                <div class="match-meta">MEX (Azteca) • July 6</div>
+                            </div>
+
+                            <div class="bracket-matchup upcoming">
+                                <div class="bracket-team">🇯🇵 JAPAN <span class="score mono-num">-</span></div>
+                                <div class="bracket-team">🇭🇷 CROATIA <span class="score mono-num">-</span></div>
+                                <div class="match-meta">MIA (Hard Rock) • July 7</div>
+                            </div>
+                        </div>
+
+                        <!-- Quarter Finals Columns -->
+                        <div class="bracket-round qf">
+                            <h3>Quarter-Finals</h3>
+                            <div class="bracket-matchup upcoming">
+                                <div class="bracket-team">🇧🇷 BRAZIL</div>
+                                <div class="bracket-team">🇮🇹 ITALY</div>
+                                <div class="match-meta">BOS (Gillette) • July 10</div>
+                            </div>
+                            <div class="bracket-matchup upcoming">
+                                <div class="bracket-team" id="qf-slot-winner1">Winner (USA/GER)</div>
+                                <div class="bracket-team" id="qf-slot-winner2">Winner (ARG/FRA)</div>
+                                <div class="match-meta">VAN (BC Place) • July 11</div>
+                            </div>
+                        </div>
+
+                        <!-- Semi Finals Column -->
+                        <div class="bracket-round sf">
+                            <h3>Semi-Finals</h3>
+                            <div class="bracket-matchup upcoming">
+                                <div class="bracket-team">TBD</div>
+                                <div class="bracket-team">TBD</div>
+                                <div class="match-meta">DAL (AT&T) • July 14</div>
+                            </div>
+                        </div>
+
+                        <!-- Final Column -->
+                        <div class="bracket-round finals">
+                            <h3>FINAL</h3>
+                            <div class="bracket-matchup upcoming final-match">
+                                <div class="bracket-team">🏆 TBD</div>
+                                <div class="bracket-team">🏆 TBD</div>
+                                <div class="match-meta text-gold">NY (MetLife) • July 19</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 16 Host Venues Telemetry Center table -->
+                <div class="venues-metrics-table-wrapper">
+                    <h3>🏟️ 16 Host Venues Operations & Crowd Index Dashboard</h3>
+                    <table class="venues-metrics-table">
+                        <thead>
+                            <tr>
+                                <th>Stadium Venue</th>
+                                <th>Location</th>
+                                <th>Capacity</th>
+                                <th>Match Status</th>
+                                <th>Crowd Load</th>
+                                <th>Restroom Wait</th>
+                                <th>Solar Gen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="active-tr">
+                                <td>MetLife Stadium</td>
+                                <td>New York / NJ</td>
+                                <td class="mono-num">82,500</td>
+                                <td><span class="custom-badge cyan animate-pulse">LIVE: USA 2-1 GER</span></td>
+                                <td class="mono-num text-green">89.4% (Optimal)</td>
+                                <td class="mono-num">4.2 min</td>
+                                <td class="mono-num text-green">485 kW</td>
+                            </tr>
+                            <tr class="active-tr">
+                                <td>SoFi Stadium</td>
+                                <td>Los Angeles, CA</td>
+                                <td class="mono-num">70,240</td>
+                                <td><span class="custom-badge cyan animate-pulse">LIVE: ARG 1-1 FRA</span></td>
+                                <td class="mono-num text-green">94.1% (High)</td>
+                                <td class="mono-num">7.8 min</td>
+                                <td class="mono-num text-green">612 kW</td>
+                            </tr>
+                            <tr class="active-tr">
+                                <td>Estadio Azteca</td>
+                                <td>Mexico City, MX</td>
+                                <td class="mono-num">87,523</td>
+                                <td><span class="custom-badge cyan animate-pulse">LIVE: MEX 0-0 ENG</span></td>
+                                <td class="mono-num text-green">95.4% (Critical)</td>
+                                <td class="mono-num">9.5 min</td>
+                                <td class="mono-num text-green">310 kW</td>
+                            </tr>
+                            <tr>
+                                <td>AT&T Stadium</td>
+                                <td>Dallas, TX</td>
+                                <td class="mono-num">93,000</td>
+                                <td><span class="custom-badge gold">COMPLETED (BRA 2-1)</span></td>
+                                <td class="mono-num text-muted">0.0% (Cleared)</td>
+                                <td class="mono-num">-</td>
+                                <td class="mono-num text-green">144 kW</td>
+                            </tr>
+                            <tr>
+                                <td>Hard Rock Stadium</td>
+                                <td>Miami, FL</td>
+                                <td class="mono-num">64,767</td>
+                                <td><span class="custom-badge yellow">UPCOMING (JAP-CRO)</span></td>
+                                <td class="mono-num text-muted">0.0% (Standby)</td>
+                                <td class="mono-num">-</td>
+                                <td class="mono-num text-green">480 kW</td>
+                            </tr>
+                            <tr>
+                                <td>Mercedes-Benz</td>
+                                <td>Atlanta, GA</td>
+                                <td class="mono-num">71,000</td>
+                                <td><span class="custom-badge gold">COMPLETED (ITA 1-0)</span></td>
+                                <td class="mono-num text-muted">0.0% (Cleared)</td>
+                                <td class="mono-num">-</td>
+                                <td class="mono-num text-green">520 kW</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+        </div>
+    </div>
+
+
+
+    <!-- Footer Area -->
+    <footer class="app-footer">
+        <p>&copy; FIFA World Cup 2026 Stadium Management Systems. Powered by Antigravity GenAI Services.</p>
+    </footer>
+
+    <!-- App JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
