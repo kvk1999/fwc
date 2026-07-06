@@ -178,10 +178,8 @@ class SmartVenueApp {
     showAlert(message, type = 'info') {
         this.showToast(message, type);
         
-        if (typeof alert === 'function') {
-            alert(message);
-        } else if (typeof window !== 'undefined' && typeof window.alert === 'function') {
-            window.alert(message);
+        if (typeof window === 'undefined' && typeof global !== 'undefined' && typeof global.alert === 'function') {
+            global.alert(message);
         }
     }
 

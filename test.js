@@ -235,6 +235,13 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
             if (event === 'click') couponClickCallback = cb;
         };
 
+        const testEcoPowerBtn = createMockElement('button');
+        let ecoPowerClickCallback = null;
+        testEcoPowerBtn.addEventListener = (event, cb) => {
+            if (event === 'click') ecoPowerClickCallback = cb;
+        };
+        const testSolarInText = createMockElement('span');
+
         const testWalletBalanceText = createMockElement('span');
         const testTransitDistance = { value: '15' };
         const testTransitMethod = { value: 'rideshare_ev' };
@@ -250,6 +257,8 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
             readyState: 'complete',
             getElementById: (id) => {
                 if (id === 'claim-coupon-btn') return testClaimCouponBtn;
+                if (id === 'eco-power-btn') return testEcoPowerBtn;
+                if (id === 'solar-in') return testSolarInText;
                 if (id === 'wallet-balance') return testWalletBalanceText;
                 if (id === 'transit-distance') return testTransitDistance;
                 if (id === 'transit-method') return testTransitMethod;
@@ -463,6 +472,20 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         testApp.resolveKnockoutWinner('usager');
         assert.ok(testApp.venueData.metlife.score.includes("2 - 2 ("));
         assert.ok(testApp.venueData.metlife.score.includes("pen)"));
+
+        // 16. Test HVAC Smart Eco Mode toggling
+        assert.ok(ecoPowerClickCallback);
+        const initialSolar = testApp.telemetry.solar;
+        
+        // Toggle on (it starts inactive)
+        ecoPowerClickCallback();
+        assert.strictEqual(testApp.telemetry.solar, initialSolar + 35);
+        assert.strictEqual(testSolarInText.textContent, `${initialSolar + 35} kW`);
+        
+        // Toggle off
+        ecoPowerClickCallback();
+        assert.strictEqual(testApp.telemetry.solar, initialSolar);
+        assert.strictEqual(testSolarInText.textContent, `${initialSolar} kW`);
 
         // Clean up global mocks
         delete global.document;
