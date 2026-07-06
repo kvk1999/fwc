@@ -470,5 +470,57 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         global.setInterval = originalSetInterval;
         global.clearInterval = originalClearInterval;
     });
+
+    await t.test('8. Input Sanitization and Eco-Transit Bounds Clamping', () => {
+        const testApp = new SmartVenueApp();
+        
+        // Define mock structures
+        const testTransitDistance = { value: '' };
+        const testTransitMethod = { value: 'rideshare_ev' };
+        const testCarbonSavedText = { textContent: '' };
+        const testCoinsEarnedText = { textContent: '' };
+        const testWalletBalanceText = { textContent: '' };
+        
+        testApp.transitDistance = testTransitDistance;
+        testApp.transitMethod = testTransitMethod;
+        testApp.carbonSavedText = testCarbonSavedText;
+        testApp.coinsEarnedText = testCoinsEarnedText;
+        testApp.walletBalanceText = testWalletBalanceText;
+        testApp.walletBalance = 100;
+        testApp.animateBalanceCounter = (start, end) => {
+            testApp.walletBalance = end;
+            testApp.walletBalanceText.textContent = String(end);
+        };
+        testApp.updateMapDetailBox = () => {};
+
+        // 1. Test alphabetical invalid input (should clamp to 0)
+        testTransitDistance.value = 'abc_invalid';
+        testApp.calculateEcoTransit();
+        assert.strictEqual(parseFloat(testTransitDistance.value), 0);
+        assert.strictEqual(testApp.walletBalance, 100);
+
+        // 2. Test negative input containing characters (should sanitize out '-' and letters to positive)
+        testTransitDistance.value = '-25.5xyz';
+        testApp.calculateEcoTransit();
+        assert.strictEqual(testTransitDistance.value, '25.5');
+        // EV: CO2 saved = 25.5 * 0.85 - 25.5 * 0.25 = 15.3. Coins = Math.round(15.3 * 2) = 31 coins.
+        assert.strictEqual(testApp.walletBalance, 131);
+
+        // 3. Test overflow clamping (input > 500 should be clamped to 500)
+        testApp.walletBalance = 100;
+        testTransitDistance.value = '1500';
+        testApp.calculateEcoTransit();
+        assert.strictEqual(testTransitDistance.value, '500.0');
+        // EV: CO2 saved = 500 * 0.85 - 500 * 0.25 = 300. Coins = Math.round(300 * 2) = 600 coins.
+        assert.strictEqual(testApp.walletBalance, 700);
+
+        // 4. Test multi-decimal points sanitization (should keep first decimal only)
+        testApp.walletBalance = 100;
+        testTransitDistance.value = '10.5.2'; // Sanitized to 10.52 -> toFixed(1) -> 10.5
+        testApp.calculateEcoTransit();
+        assert.strictEqual(testTransitDistance.value, '10.5');
+        // EV: CO2 saved = 10.52 * 0.6 = 6.312. Coins = Math.round(6.312 * 2) = 13 coins.
+        assert.strictEqual(testApp.walletBalance, 113);
+    });
 });
 
