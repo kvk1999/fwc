@@ -1359,9 +1359,8 @@ A thrilling goal has been scored at **${venue.name}**!
         }
     }
 
-    /* Dynamically translates primary header and onboarding interface elements based on Lang Selector */
-    renderLanguageStrings() {
-        const strings = {
+    getLanguageStrings() {
+        return {
             en: {
                 fanLabel: "Fan Portal",
                 opsLabel: "V-Ops Control",
@@ -1428,7 +1427,11 @@ A thrilling goal has been scored at **${venue.name}**!
 
             }
         };
+    }
 
+    /* Dynamically translates primary header and onboarding interface elements based on Lang Selector */
+    renderLanguageStrings() {
+        const strings = this.getLanguageStrings();
         const activeStrings = strings[this.currentLanguage] || strings.en;
 
         // Apply changes to layout text

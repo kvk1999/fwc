@@ -24,7 +24,23 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         assert.strictEqual(app.venueData.att.status, "COMPLETED");
     });
 
-    await t.test('3. Simulated Live Telemetry Auditing', () => {
+    await t.test('3. Multilingual Translation Dictionary Coverage', () => {
+        const translationDict = app.getLanguageStrings();
+        assert.ok(translationDict);
+        
+        const languages = ['en', 'es', 'fr', 'pt', 'ar'];
+        const essentialKeys = ['fanLabel', 'opsLabel', 'navTitle', 'transitTitle', 'transitLabel', 'venuePrompt', 'chatTitle', 'chatSub', 'chatIntro', 'chatPlaceholder'];
+        
+        languages.forEach(lang => {
+            assert.ok(translationDict[lang], `Translation dictionary is missing support for: ${lang}`);
+            essentialKeys.forEach(key => {
+                assert.ok(translationDict[lang][key], `Language '${lang}' is missing essential dictionary key: '${key}'`);
+                assert.strictEqual(typeof translationDict[lang][key], 'string');
+            });
+        });
+    });
+
+    await t.test('4. Simulated Live Telemetry Auditing', () => {
         assert.ok(app.telemetry);
         assert.strictEqual(typeof app.telemetry.attendance, 'number');
         assert.strictEqual(typeof app.telemetry.solar, 'number');
@@ -34,7 +50,7 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         assert.ok(app.telemetry.rainwater > 0);
     });
 
-    await t.test('4. Eco-Transit Carbon Savings Calculator Validation', () => {
+    await t.test('5. Eco-Transit Carbon Savings Calculator Validation', () => {
         // Test Metro: co2PerMile = 0.05, savingsPercentage = 94%
         // distance = 10. Baseline emissions = 10 * 0.85 = 8.5
         // Metro emissions = 10 * 0.05 = 0.5. Savings = 8.5 - 0.5 = 8.0 lbs.
@@ -72,7 +88,7 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         assert.strictEqual(defaultResult.coinsAwarded, 0);
     });
 
-    await t.test('5. AI Assistant Telemetry-Linked Response Verification', () => {
+    await t.test('6. AI Assistant Telemetry-Linked Response Verification', () => {
         // Query Today's Match Telemetry
         const matchResponse = app.generateOpsBotResponse("today's match standings");
         assert.ok(matchResponse.includes("TOURNAMENT WIDE TELEMETRY BRIEF"));
