@@ -120,64 +120,179 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
     });
 
     await t.test('7. State Transitions and Dynamic Event Simulation', () => {
-        // Create mock DOM structure to prevent ReferenceErrors / TypeErrors
-        const mockElement = {
-            classList: {
-                add: () => {},
-                remove: () => {}
-            },
-            setAttribute: () => {},
-            getAttribute: () => null,
-            innerText: '',
-            style: {},
-            textContent: '',
-            append: () => {},
-            appendChild: () => {},
-            addEventListener: () => {},
-            insertBefore: () => {},
-            children: []
+        // Mock setInterval/clearInterval to prevent background loops during test
+        const originalSetInterval = global.setInterval;
+        const originalClearInterval = global.clearInterval;
+        global.setInterval = () => 999;
+        global.clearInterval = () => {};
+
+        // Track listener callbacks
+        let couponClickCallback = null;
+
+        // Custom element factories for test
+        const createMockElement = (tag) => {
+            const attrs = {};
+            const classes = new Set();
+            return {
+                tagName: tag ? tag.toUpperCase() : 'DIV',
+                classList: {
+                    add: (cls) => classes.add(cls),
+                    remove: (cls) => classes.delete(cls),
+                    contains: (cls) => classes.has(cls),
+                    toggle: (cls) => {
+                        if (classes.has(cls)) { classes.delete(cls); return false; }
+                        else { classes.add(cls); return true; }
+                    }
+                },
+                setAttribute: (name, val) => { attrs[name] = String(val); },
+                removeAttribute: (name) => { delete attrs[name]; },
+                getAttribute: (name) => attrs[name] || null,
+                style: {},
+                textContent: '',
+                innerText: '',
+                append: () => {},
+                appendChild: function(child) {
+                    if (this.children) this.children.push(child);
+                    return child;
+                },
+                removeChild: function(child) {
+                    if (this.children) {
+                        const idx = this.children.indexOf(child);
+                        if (idx !== -1) this.children.splice(idx, 1);
+                    }
+                    return child;
+                },
+                addEventListener: function(event, cb) {
+                    if (event === 'click' && tag === 'button') {
+                        // generic catch-all
+                    }
+                },
+                insertBefore: () => {},
+                querySelector: () => createMockElement('div'),
+                querySelectorAll: () => [],
+                children: []
+            };
         };
+
+        const createMockLayerBtn = (layerId) => {
+            const btn = createMockElement('button');
+            btn.setAttribute('data-layer', layerId);
+            btn.setAttribute('aria-selected', 'false');
+            return btn;
+        };
+
+        const createMockMapLayer = (layerId) => {
+            const layer = createMockElement('div');
+            layer.id = `layer-${layerId}`;
+            return layer;
+        };
+
+        const testLayerBtns = [
+            createMockLayerBtn('seating'),
+            createMockLayerBtn('gates'),
+            createMockLayerBtn('concessions'),
+            createMockLayerBtn('amenities')
+        ];
+        testLayerBtns[0].classList.add('active');
+        testLayerBtns[0].setAttribute('aria-selected', 'true');
+
+        const testMapLayers = [
+            createMockMapLayer('seating'),
+            createMockMapLayer('gates'),
+            createMockMapLayer('concessions'),
+            createMockMapLayer('amenities')
+        ];
+
+        const testClaimCouponBtn = createMockElement('button');
+        testClaimCouponBtn.addEventListener = (event, cb) => {
+            if (event === 'click') couponClickCallback = cb;
+        };
+
+        const testWalletBalanceText = createMockElement('span');
+        const testTransitDistance = { value: '15' };
+        const testTransitMethod = { value: 'rideshare_ev' };
+        const testCarbonSavedText = createMockElement('span');
+        const testCoinsEarnedText = createMockElement('span');
+
+        const testFanChatMessages = createMockElement('div');
+        const testOpsChatMessages = createMockElement('div');
+
+        const generalMockElement = createMockElement('div');
 
         global.document = {
             readyState: 'complete',
-            getElementById: () => mockElement,
-            querySelector: () => mockElement,
-            querySelectorAll: () => [mockElement],
-            createTextNode: () => mockElement,
-            createElement: () => {
-                return {
-                    classList: { add: () => {}, remove: () => {} },
-                    setAttribute: () => {},
-                    getAttribute: () => null,
-                    innerText: '',
-                    style: {},
-                    textContent: '',
-                    append: () => {},
-                    appendChild: () => {},
-                    addEventListener: () => {},
-                    insertBefore: () => {},
-                    children: []
-                };
+            getElementById: (id) => {
+                if (id === 'claim-coupon-btn') return testClaimCouponBtn;
+                if (id === 'wallet-balance') return testWalletBalanceText;
+                if (id === 'transit-distance') return testTransitDistance;
+                if (id === 'transit-method') return testTransitMethod;
+                if (id === 'carbon-saved') return testCarbonSavedText;
+                if (id === 'coins-earned') return testCoinsEarnedText;
+                if (id === 'fan-chat-messages') return testFanChatMessages;
+                if (id === 'ops-chat-messages') return testOpsChatMessages;
+                if (id === 'label-fan') return generalMockElement;
+                if (id === 'label-ops') return generalMockElement;
+                if (typeof id === 'string' && id.startsWith('typing-')) {
+                    const foundInFan = testFanChatMessages.children.find(c => c.id === id);
+                    if (foundInFan) return foundInFan;
+                    const foundInOps = testOpsChatMessages.children.find(c => c.id === id);
+                    if (foundInOps) return foundInOps;
+                }
+                return generalMockElement;
+            },
+            querySelector: (selector) => {
+                if (selector === '#fan-map-card h2') return generalMockElement;
+                if (selector === '#eco-transit-card h2') return generalMockElement;
+                if (selector === 'label[for="transit-method"]') return generalMockElement;
+                if (selector === '.green-wallet-banner .wallet-text p') return generalMockElement;
+                if (selector === '#fan-chat-panel .chat-agent-info h2') return generalMockElement;
+                if (selector === '#fan-chat-panel .chat-agent-info span') return generalMockElement;
+                return generalMockElement;
+            },
+            querySelectorAll: (selector) => {
+                if (selector === '.layer-btn') return testLayerBtns;
+                if (selector === '.map-layer') return testMapLayers;
+                return [generalMockElement];
+            },
+            createTextNode: (text) => {
+                const node = createMockElement('text');
+                node.textContent = text;
+                return node;
+            },
+            createElement: (tag) => {
+                return createMockElement(tag);
             }
         };
-        global.alert = () => {};
+
+        let lastAlertMsg = '';
+        global.alert = (msg) => {
+            lastAlertMsg = msg;
+        };
 
         const testApp = new SmartVenueApp();
 
-        // Assign mock elements
-        testApp.body = mockElement;
-        testApp.fanView = mockElement;
-        testApp.opsView = mockElement;
-        testApp.modeToggleBtn = mockElement;
-        testApp.opsActiveIncidentsText = mockElement;
-        testApp.fanChatInput = mockElement;
-        testApp.fanChatMessages = mockElement;
-        testApp.walletBalanceText = mockElement;
-        testApp.claimCouponBtn = mockElement;
+        // Assign mock elements explicitly to ensure pointers are mapped
+        testApp.body = generalMockElement;
+        testApp.fanView = generalMockElement;
+        testApp.opsView = generalMockElement;
+        testApp.modeToggleBtn = generalMockElement;
+        testApp.opsActiveIncidentsText = generalMockElement;
+        testApp.fanChatInput = generalMockElement;
+        testApp.fanChatMessages = testFanChatMessages;
+        testApp.opsChatMessages = testOpsChatMessages;
+        testApp.walletBalanceText = testWalletBalanceText;
+        testApp.claimCouponBtn = testClaimCouponBtn;
+        testApp.layerBtns = testLayerBtns;
+        testApp.mapLayers = testMapLayers;
+        testApp.transitDistance = testTransitDistance;
+        testApp.transitMethod = testTransitMethod;
+        testApp.carbonSavedText = testCarbonSavedText;
+        testApp.coinsEarnedText = testCoinsEarnedText;
 
         // Verify initial states
         assert.strictEqual(testApp.currentMode, 'fan');
         assert.strictEqual(testApp.currentLanguage, 'en');
+        assert.strictEqual(testApp.walletBalance, 140);
         assert.strictEqual(testApp.activeIncidentsCount, 2);
 
         // 1. Test Mode Swap / toggleAppMode()
@@ -194,15 +309,104 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         testApp.handleLanguageChange('fr');
         assert.strictEqual(testApp.currentLanguage, 'fr');
 
-        // 3. Test Dynamic Incident Simulation / simulateNewIncident()
+        testApp.handleLanguageChange('pt');
+        assert.strictEqual(testApp.currentLanguage, 'pt');
+
+        testApp.handleLanguageChange('ar');
+        assert.strictEqual(testApp.currentLanguage, 'ar');
+
+        testApp.handleLanguageChange('en');
+        assert.strictEqual(testApp.currentLanguage, 'en');
+
+        // 3. Test HTML Escaping / escapeHTML()
+        assert.strictEqual(testApp.escapeHTML('<script>alert("XSS")</script>'), '&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;');
+        assert.strictEqual(testApp.escapeHTML('Hello & "world"'), 'Hello &amp; &quot;world&quot;');
+        assert.strictEqual(testApp.escapeHTML(''), '');
+        assert.strictEqual(testApp.escapeHTML(null), '');
+
+        // 4. Test Programmatic Markdown Parsing / parseMarkdownToDOM()
+        const domH3 = testApp.parseMarkdownToDOM('### Subtitle');
+        assert.ok(domH3);
+        const domBold = testApp.parseMarkdownToDOM('This is **bold** text');
+        assert.ok(domBold);
+        const domList = testApp.parseMarkdownToDOM('* bullet 1\n- bullet 2');
+        assert.ok(domList);
+
+        // 5. Test Dynamic Incident Simulation / simulateNewIncident()
         testApp.simulateNewIncident();
         assert.strictEqual(testApp.activeIncidentsCount, 3);
 
         testApp.simulateNewIncident();
         assert.strictEqual(testApp.activeIncidentsCount, 4);
 
+        // 6. Test Volunteer Dispatching / dispatchVolunteers()
+        testApp.dispatchVolunteers('mock-id', 'Incident resolved');
+        assert.strictEqual(testApp.activeIncidentsCount, 3);
+
+        // 7. Test Venue Change / handleVenueChange()
+        testApp.handleVenueChange('sofi');
+        assert.strictEqual(testApp.currentVenue, 'sofi');
+
+        // 8. Test Map Layer Switching and ARIA programmatic attributes
+        testApp.switchMapLayer('concessions');
+        assert.strictEqual(testLayerBtns[0].getAttribute('aria-selected'), 'false');
+        assert.strictEqual(testLayerBtns[2].getAttribute('aria-selected'), 'true');
+        assert.strictEqual(testLayerBtns[2].classList.contains('active'), true);
+        assert.strictEqual(testMapLayers[2].style.display, 'block');
+
+        // 9. Test Synchronous Chat Bot Flow and escaping validation
+        const originalSetTimeout = global.setTimeout;
+        global.setTimeout = (callback) => {
+            callback();
+            return 111;
+        };
+
+        // Send a message via Fan Assistant and check if user and bot responses are added
+        testFanChatMessages.children = [];
+        testApp.handleFanChatMessage("Show concession vegan options");
+        assert.ok(testFanChatMessages.children.length >= 2); // user and assistant message
+        
+        // Send message with XSS payload to check sanitization
+        testFanChatMessages.children = [];
+        testApp.handleFanChatMessage("<script>alert(1)</script>");
+        // Check if user message inside mock children contains escaped text
+        const userMsgNode = testFanChatMessages.children[0];
+        assert.ok(userMsgNode);
+        
+        // Send a message via Ops Assistant and check
+        testOpsChatMessages.children = [];
+        testApp.handleOpsChatMessage("congestion at gate d");
+        assert.ok(testOpsChatMessages.children.length >= 2);
+
+        // Restore setTimeout
+        global.setTimeout = originalSetTimeout;
+
+        // 10. Test Eco-Transit Calculation
+        testApp.walletBalance = 100;
+        testApp.animateBalanceCounter = (start, end) => {
+            testApp.updateWalletUI();
+        };
+        // For rideshare_ev with 15 miles: CO2 saved = 15 * 0.85 - 15 * 0.25 = 9.0 lbs, coins = round(9 * 2) = 18 coins
+        testApp.calculateEcoTransit();
+        assert.strictEqual(testApp.walletBalance, 118);
+        assert.strictEqual(testWalletBalanceText.textContent, 118);
+
+        // 11. Test Coupon Claiming flow
+        testApp.walletBalance = 210;
+        testApp.updateWalletUI();
+        assert.strictEqual(testClaimCouponBtn.getAttribute('disabled'), null); // not disabled
+        
+        assert.ok(couponClickCallback);
+        couponClickCallback();
+        assert.strictEqual(testApp.walletBalance, 10);
+        assert.strictEqual(testWalletBalanceText.textContent, 10);
+        assert.ok(lastAlertMsg.includes("COUPON CLAIMED") || lastAlertMsg.includes("CUPÓN CANJEADO"));
+
         // Clean up global mocks
         delete global.document;
         delete global.alert;
+        global.setInterval = originalSetInterval;
+        global.clearInterval = originalClearInterval;
     });
 });
+

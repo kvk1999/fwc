@@ -106,6 +106,10 @@ class SmartVenueApp {
         this.fanView = document.getElementById('fan-mode-view');
         this.opsView = document.getElementById('ops-mode-view');
         
+        // Cache label-fan and label-ops elements for performance and programmatic updates
+        this.labelFan = document.getElementById('label-fan');
+        this.labelOps = document.getElementById('label-ops');
+        
         // Settings Selectors
         this.venueSelect = document.getElementById('venue-select');
         this.langSelect = document.getElementById('lang-select');
@@ -185,17 +189,15 @@ class SmartVenueApp {
             this.modeToggleBtn.addEventListener('click', () => this.toggleAppMode());
         }
 
-        const labelFan = document.getElementById('label-fan');
-        const labelOps = document.getElementById('label-ops');
-        if (labelFan) {
-            labelFan.addEventListener('click', () => {
+        if (this.labelFan) {
+            this.labelFan.addEventListener('click', () => {
                 if (this.currentMode !== 'fan') {
                     this.toggleAppMode();
                 }
             });
         }
-        if (labelOps) {
-            labelOps.addEventListener('click', () => {
+        if (this.labelOps) {
+            this.labelOps.addEventListener('click', () => {
                 if (this.currentMode !== 'ops') {
                     this.toggleAppMode();
                 }
@@ -245,8 +247,12 @@ class SmartVenueApp {
         if (this.layerBtns) {
             this.layerBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    this.layerBtns.forEach(b => b.classList.remove('active'));
+                    this.layerBtns.forEach(b => {
+                        b.classList.remove('active');
+                        b.setAttribute('aria-selected', 'false');
+                    });
                     btn.classList.add('active');
+                    btn.setAttribute('aria-selected', 'true');
                     const targetLayer = btn.getAttribute('data-layer');
                     this.switchMapLayer(targetLayer);
                 });
@@ -373,13 +379,13 @@ class SmartVenueApp {
             this.ecoPowerBtn.addEventListener('click', () => {
                 this.ecoPowerBtn.classList.toggle('active');
                 if (this.ecoPowerBtn.classList.contains('active')) {
-                    this.ecoPowerBtn.innerText = "⚡ HVAC Smart Eco mode (ACTIVE)";
+                    this.ecoPowerBtn.textContent = "⚡ HVAC Smart Eco mode (ACTIVE)";
                     this.telemetry.solar += 35;
-                    this.solarInText.innerText = `${this.telemetry.solar} kW`;
+                    this.solarInText.textContent = `${this.telemetry.solar} kW`;
                 } else {
-                    this.ecoPowerBtn.innerText = "AI Intelligent HVAC Eco Mode";
+                    this.ecoPowerBtn.textContent = "AI Intelligent HVAC Eco Mode";
                     this.telemetry.solar -= 35;
-                    this.solarInText.innerText = `${this.telemetry.solar} kW`;
+                    this.solarInText.textContent = `${this.telemetry.solar} kW`;
                 }
             });
         }
@@ -396,8 +402,8 @@ class SmartVenueApp {
             this.opsView.classList.add('active');
             
             // Sync active UI toggler styles
-            document.getElementById('label-fan').classList.remove('active');
-            document.getElementById('label-ops').classList.add('active');
+            if (this.labelFan) this.labelFan.classList.remove('active');
+            if (this.labelOps) this.labelOps.classList.add('active');
             if (this.modeToggleBtn) {
                 this.modeToggleBtn.setAttribute('aria-checked', 'true');
             }
@@ -408,8 +414,8 @@ class SmartVenueApp {
             this.fanView.classList.add('active');
             
             // Sync active UI toggler styles
-            document.getElementById('label-ops').classList.remove('active');
-            document.getElementById('label-fan').classList.add('active');
+            if (this.labelOps) this.labelOps.classList.remove('active');
+            if (this.labelFan) this.labelFan.classList.add('active');
             if (this.modeToggleBtn) {
                 this.modeToggleBtn.setAttribute('aria-checked', 'false');
             }
@@ -426,15 +432,15 @@ class SmartVenueApp {
         if (!ribbonTeams || !ribbonStatusBadge || !ribbonVenueText || !countdownLabel) return;
 
         // Update venue text
-        ribbonVenueText.innerText = `${venue.name} • ${venue.stage}`;
+        ribbonVenueText.textContent = `${venue.name} • ${venue.stage}`;
         
         if (venue.status === "LIVE") {
             ribbonStatusBadge.className = "info-badge live";
             ribbonStatusBadge.style.backgroundColor = "";
             ribbonStatusBadge.style.color = "";
             ribbonStatusBadge.style.border = "";
-            ribbonStatusBadge.innerText = "LIVE FEEDS";
-            countdownLabel.innerText = "Kickoff (Other Matches):";
+            ribbonStatusBadge.textContent = "LIVE FEEDS";
+            countdownLabel.textContent = "Kickoff (Other Matches):";
             
             // Render teams with live score and time
             ribbonTeams.textContent = '';
@@ -461,8 +467,8 @@ class SmartVenueApp {
             ribbonStatusBadge.style.backgroundColor = "var(--gold-brand-dim)";
             ribbonStatusBadge.style.color = "var(--gold-brand)";
             ribbonStatusBadge.style.border = "1px solid rgba(245, 158, 11, 0.3)";
-            ribbonStatusBadge.innerText = "COMPLETED";
-            countdownLabel.innerText = "Match Cleared:";
+            ribbonStatusBadge.textContent = "COMPLETED";
+            countdownLabel.textContent = "Match Cleared:";
             
             ribbonTeams.textContent = '';
             const t1 = document.createElement('span');
@@ -490,8 +496,8 @@ class SmartVenueApp {
             ribbonStatusBadge.style.backgroundColor = "rgba(234, 179, 8, 0.15)";
             ribbonStatusBadge.style.color = "rgb(234, 179, 8)";
             ribbonStatusBadge.style.border = "1px solid rgba(234, 179, 8, 0.3)";
-            ribbonStatusBadge.innerText = "UPCOMING MATCH";
-            countdownLabel.innerText = "Time to Kickoff:";
+            ribbonStatusBadge.textContent = "UPCOMING MATCH";
+            countdownLabel.textContent = "Time to Kickoff:";
             
             ribbonTeams.textContent = '';
             const t1 = document.createElement('span');
@@ -516,8 +522,8 @@ class SmartVenueApp {
             ribbonStatusBadge.style.backgroundColor = "rgba(255,255,255,0.05)";
             ribbonStatusBadge.style.color = "var(--text-muted)";
             ribbonStatusBadge.style.border = "1px solid rgba(255,255,255,0.1)";
-            ribbonStatusBadge.innerText = "VENUE STANDBY";
-            countdownLabel.innerText = "Next Stage:";
+            ribbonStatusBadge.textContent = "VENUE STANDBY";
+            countdownLabel.textContent = "Next Stage:";
             
             ribbonTeams.textContent = '';
             const t1 = document.createElement('span');
@@ -573,7 +579,7 @@ class SmartVenueApp {
             this.telemetry.bin3 = Math.floor(8 + Math.random() * 10);
         }
 
-        this.liveAttendanceText.innerText = this.telemetry.attendance.toLocaleString();
+        this.liveAttendanceText.textContent = this.telemetry.attendance.toLocaleString();
         this.telemetry.avgWait = parseFloat(((this.telemetry.gateA_ppm / 110 + this.telemetry.gateB_ppm / 90 + this.telemetry.gateC_ppm / 80 + this.telemetry.gateD_ppm / 50) / 4).toFixed(1));
         this.updateOpsDashboard();
         
@@ -589,8 +595,8 @@ class SmartVenueApp {
         if (gate4) gate4.setAttribute('data-info', `Gate D (West Entrance) - HEAVY CONGESTION. Wait time: ${venue.status === 'LIVE' ? Math.round(this.telemetry.gateD_ppm / 50) : 0} mins. ppm: ${this.telemetry.gateD_ppm}`);
 
         // Reset detail box text
-        this.detailTitle.innerText = "Stadium Ingestion Event";
-        this.detailDesc.innerText = `Successfully ingested operations and seating telemetry baseline for ${venue.name}. Match-day status: ${venue.status}.`;
+        this.detailTitle.textContent = "Stadium Ingestion Event";
+        this.detailDesc.textContent = `Successfully ingested operations and seating telemetry baseline for ${venue.name}. Match-day status: ${venue.status}.`;
     }
 
     handleLanguageChange(langCode) {
@@ -610,6 +616,19 @@ class SmartVenueApp {
             }
         });
 
+        // Sync buttons active and aria-selected states
+        if (this.layerBtns) {
+            this.layerBtns.forEach(btn => {
+                if (btn.getAttribute('data-layer') === layerId) {
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-selected', 'true');
+                } else {
+                    btn.classList.remove('active');
+                    btn.setAttribute('aria-selected', 'false');
+                }
+            });
+        }
+
         // Add helpful guide text when layers are switched
         const layerGuides = {
             seating: { title: "Seating Zones Layer", desc: "Select a sector quadrant to see gate recommendations, ticket category tiers, and nearest entry pathways." },
@@ -625,8 +644,8 @@ class SmartVenueApp {
     /* Animates details panel on map clicks */
     updateMapDetailBox(title, text) {
         this.mapDetailPanel.classList.add('pulse-update');
-        this.detailTitle.innerText = title;
-        this.detailDesc.innerText = text;
+        this.detailTitle.textContent = title;
+        this.detailDesc.textContent = text;
         
         setTimeout(() => {
             this.mapDetailPanel.classList.remove('pulse-update');
@@ -674,8 +693,8 @@ class SmartVenueApp {
         const { savedEmissions, coinsAwarded } = this.calculateCarbonSavings(distance, method);
 
         // Render Results with animation
-        this.carbonSavedText.innerText = `${savedEmissions} lbs CO2`;
-        this.coinsEarnedText.innerText = `+${coinsAwarded} GC`;
+        this.carbonSavedText.textContent = `${savedEmissions} lbs CO2`;
+        this.coinsEarnedText.textContent = `+${coinsAwarded} GC`;
 
         // Update Wallet balance
         const prevWallet = this.walletBalance;
@@ -704,7 +723,7 @@ class SmartVenueApp {
             } else {
                 current--;
             }
-            if (this.walletBalanceText) this.walletBalanceText.innerText = current;
+            if (this.walletBalanceText) this.walletBalanceText.textContent = current;
             if (current === end) {
                 clearInterval(timer);
                 this.updateWalletUI();
@@ -715,7 +734,7 @@ class SmartVenueApp {
     /* Centralized helper to sync wallet balance and claim button text with current language */
     updateWalletUI() {
         if (this.walletBalanceText) {
-            this.walletBalanceText.innerText = this.walletBalance;
+            this.walletBalanceText.textContent = this.walletBalance;
         }
         if (this.claimCouponBtn) {
             if (this.walletBalance >= 200) {
@@ -727,7 +746,7 @@ class SmartVenueApp {
                     pt: "Resgatar Cupom! 🎟️",
                     ar: "استرداد الكوبون! 🎟️"
                 };
-                this.claimCouponBtn.innerText = redeemStrings[this.currentLanguage] || redeemStrings.en;
+                this.claimCouponBtn.textContent = redeemStrings[this.currentLanguage] || redeemStrings.en;
             } else {
                 this.claimCouponBtn.setAttribute('disabled', 'true');
                 const minGcStrings = {
@@ -737,7 +756,7 @@ class SmartVenueApp {
                     pt: "Resgatar (Mín: 200 GC)",
                     ar: "استرداد (الحد الأدنى: ٢٠٠ نقطة)"
                 };
-                this.claimCouponBtn.innerText = minGcStrings[this.currentLanguage] || minGcStrings.en;
+                this.claimCouponBtn.textContent = minGcStrings[this.currentLanguage] || minGcStrings.en;
             }
         }
     }
@@ -766,7 +785,7 @@ class SmartVenueApp {
             const hStr = hours.toString().padStart(2, '0');
             const mStr = minutes.toString().padStart(2, '0');
             const sStr = seconds.toString().padStart(2, '0');
-            document.getElementById('countdown').innerText = `${dStr}d : ${hStr}h : ${mStr}m : ${sStr}s`;
+            document.getElementById('countdown').textContent = `${dStr}d : ${hStr}h : ${mStr}m : ${sStr}s`;
         }, 1000);
 
         // Dynamic Telemetry drifting every 4 seconds
@@ -798,14 +817,14 @@ class SmartVenueApp {
     updateOpsDashboard() {
         if (this.currentMode === 'ops') {
             // Update gauges & meters
-            this.opsOccupancyText.innerText = `${((this.telemetry.attendance / 82500) * 100).toFixed(1)}%`;
-            this.opsAvgWaitText.innerText = `${this.telemetry.avgWait} min`;
-            this.opsActiveIncidentsText.innerText = this.activeIncidentsCount;
+            this.opsOccupancyText.textContent = `${((this.telemetry.attendance / 82500) * 100).toFixed(1)}%`;
+            this.opsAvgWaitText.textContent = `${this.telemetry.avgWait} min`;
+            this.opsActiveIncidentsText.textContent = this.activeIncidentsCount;
 
-            this.gateAStatsText.innerText = `${this.telemetry.gateA_ppm} ppm • Normal`;
-            this.gateBStatsText.innerText = `${this.telemetry.gateB_ppm} ppm • Moderate`;
-            this.gateCStatsText.innerText = `${this.telemetry.gateC_ppm} ppm • Light`;
-            this.gateDStatsText.innerText = `${this.telemetry.gateD_ppm} ppm • HEAVY`;
+            this.gateAStatsText.textContent = `${this.telemetry.gateA_ppm} ppm • Normal`;
+            this.gateBStatsText.textContent = `${this.telemetry.gateB_ppm} ppm • Moderate`;
+            this.gateCStatsText.textContent = `${this.telemetry.gateC_ppm} ppm • Light`;
+            this.gateDStatsText.textContent = `${this.telemetry.gateD_ppm} ppm • HEAVY`;
 
             this.gateABar.style.width = `${Math.min(100, (this.telemetry.gateA_ppm / 500) * 100)}%`;
             this.gateBBar.style.width = `${Math.min(100, (this.telemetry.gateB_ppm / 800) * 100)}%`;
@@ -816,12 +835,12 @@ class SmartVenueApp {
             this.bin2Fill.style.height = `${this.telemetry.bin2}%`;
             this.bin3Fill.style.height = `${this.telemetry.bin3}%`;
             
-            this.bin1Text.innerText = `${this.telemetry.bin1}%`;
-            this.bin2Text.innerText = `${this.telemetry.bin2}%`;
-            this.bin3Text.innerText = `${this.telemetry.bin3}%`;
+            this.bin1Text.textContent = `${this.telemetry.bin1}%`;
+            this.bin2Text.textContent = `${this.telemetry.bin2}%`;
+            this.bin3Text.textContent = `${this.telemetry.bin3}%`;
 
-            this.solarInText.innerText = `${this.telemetry.solar} kW`;
-            this.rainHarvestText.innerText = `${this.telemetry.rainwater.toLocaleString()} Gal`;
+            this.solarInText.textContent = `${this.telemetry.solar} kW`;
+            this.rainHarvestText.textContent = `${this.telemetry.rainwater.toLocaleString()} Gal`;
         }
     }
 
@@ -1050,25 +1069,25 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
             if (btn) {
                 btn.setAttribute('disabled', 'true');
                 btn.style.backgroundColor = 'var(--green-neon)';
-                btn.innerText = 'DISPATCH COMPLETED';
+                btn.textContent = 'DISPATCH COMPLETED';
             }
 
             // Append resolving action to system AI logs
             const badge = item.querySelector('.inc-badge');
             if (badge) {
                 badge.className = "inc-badge p-green";
-                badge.innerText = "RESOLVED";
+                badge.textContent = "RESOLVED";
             }
 
             // Decrement active alerts
             if (this.activeIncidentsCount > 0) {
                 this.activeIncidentsCount--;
-                this.opsActiveIncidentsText.innerText = this.activeIncidentsCount;
+                this.opsActiveIncidentsText.textContent = this.activeIncidentsCount;
             }
 
             // Add volunteers
-            const currentVolunteers = parseInt(this.volunteerReadyText.innerText) || 48;
-            this.volunteerReadyText.innerText = `${currentVolunteers + 3} Volunteers Active`;
+            const currentVolunteers = parseInt(this.volunteerReadyText.textContent) || 48;
+            this.volunteerReadyText.textContent = `${currentVolunteers + 3} Volunteers Active`;
 
             alert(`✅ DISPATCH NOTIFICATION SENT:\n"${completionMessage}"`);
         }
@@ -1077,7 +1096,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
     /* Simulates a new telemetry-triggered event alert */
     simulateNewIncident() {
         this.activeIncidentsCount++;
-        this.opsActiveIncidentsText.innerText = this.activeIncidentsCount;
+        this.opsActiveIncidentsText.textContent = this.activeIncidentsCount;
 
         // Custom simulated event properties
         const incidents = [
@@ -1234,7 +1253,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
         }
         if (timeEl) {
             if (match.isFT) {
-                timeEl.innerText = "FT";
+                timeEl.textContent = "FT";
                 timeEl.classList.remove('blinking');
                 const parentCard = timeEl.closest('.ticker-match-card');
                 if (parentCard) {
@@ -1242,10 +1261,10 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
                     parentCard.classList.add('completed-match');
                 }
             } else if (match.isHT) {
-                timeEl.innerText = "HT";
+                timeEl.textContent = "HT";
                 timeEl.classList.remove('blinking');
             } else {
-                timeEl.innerText = `${match.time}'`;
+                timeEl.textContent = `${match.time}'`;
                 timeEl.classList.add('blinking');
             }
         }
@@ -1254,20 +1273,20 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
         const bhEl = document.getElementById(match.bracketHomeId);
         const baEl = document.getElementById(match.bracketAwayId);
         const btEl = document.getElementById(match.bracketTimeId);
-        if (bhEl) bhEl.innerText = match.homeScore;
-        if (baEl) baEl.innerText = match.awayScore;
+        if (bhEl) bhEl.textContent = match.homeScore;
+        if (baEl) baEl.textContent = match.awayScore;
         if (btEl) {
             if (match.isFT) {
-                btEl.innerText = "FT";
+                btEl.textContent = "FT";
                 btEl.className = "live-tag completed";
                 btEl.style.backgroundColor = "var(--gold-brand-dim)";
                 btEl.style.color = "var(--gold-brand)";
                 btEl.style.borderColor = "rgba(245,158,11,0.3)";
             } else if (match.isHT) {
-                btEl.innerText = "HT";
+                btEl.textContent = "HT";
                 btEl.className = "live-tag halftime";
             } else {
-                btEl.innerText = `LIVE ${match.time}'`;
+                btEl.textContent = `LIVE ${match.time}'`;
                 btEl.className = "live-tag";
             }
         }
@@ -1276,7 +1295,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
         if (this.currentVenue === match.venueId) {
             this.updateRibbonForVenue(this.currentVenue);
             // Also keep attendance live
-            this.liveAttendanceText.innerText = this.telemetry.attendance.toLocaleString();
+            this.liveAttendanceText.textContent = this.telemetry.attendance.toLocaleString();
         }
     }
 
@@ -1457,6 +1476,11 @@ A thrilling goal has been scored at **${venue.name}**!
 
     /* Helper Chat styling */
     appendChatMessage(container, avatar, text, className) {
+        // Explicitly sanitize user inputs if it's a user-submitted message to guarantee complete security
+        if (className && className.includes('user-msg')) {
+            text = this.escapeHTML(text);
+        }
+
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${className}`;
 
@@ -1587,28 +1611,26 @@ A thrilling goal has been scored at **${venue.name}**!
         const activeStrings = strings[this.currentLanguage] || strings.en;
 
         // Apply changes to layout text
-        const labelFanText = document.getElementById('label-fan');
-        if (labelFanText) labelFanText.innerText = activeStrings.fanLabel;
-        const labelOpsText = document.getElementById('label-ops');
-        if (labelOpsText) labelOpsText.innerText = activeStrings.opsLabel;
+        if (this.labelFan) this.labelFan.textContent = activeStrings.fanLabel;
+        if (this.labelOps) this.labelOps.textContent = activeStrings.opsLabel;
         
         const mapHeader = document.querySelector('#fan-map-card h2');
-        if (mapHeader) mapHeader.innerText = activeStrings.navTitle;
+        if (mapHeader) mapHeader.textContent = activeStrings.navTitle;
 
         const transitHeader = document.querySelector('#eco-transit-card h2');
-        if (transitHeader) transitHeader.innerText = activeStrings.transitTitle;
+        if (transitHeader) transitHeader.textContent = activeStrings.transitTitle;
 
         const transitFormLabel = document.querySelector('label[for="transit-method"]');
-        if (transitFormLabel) transitFormLabel.innerText = activeStrings.transitLabel;
+        if (transitFormLabel) transitFormLabel.textContent = activeStrings.transitLabel;
 
         const walletLabelText = document.querySelector('.green-wallet-banner .wallet-text p');
-        if (walletLabelText) walletLabelText.innerText = activeStrings.venuePrompt;
+        if (walletLabelText) walletLabelText.textContent = activeStrings.venuePrompt;
 
         const chatNameText = document.querySelector('#fan-chat-panel .chat-agent-info h2');
-        if (chatNameText) chatNameText.innerText = activeStrings.chatTitle;
+        if (chatNameText) chatNameText.textContent = activeStrings.chatTitle;
 
         const chatSubText = document.querySelector('#fan-chat-panel .chat-agent-info span');
-        if (chatSubText) chatSubText.innerText = activeStrings.chatSub;
+        if (chatSubText) chatSubText.textContent = activeStrings.chatSub;
 
         if (this.fanChatInput) {
             this.fanChatInput.placeholder = activeStrings.chatPlaceholder;

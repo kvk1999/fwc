@@ -173,11 +173,11 @@
                             </div>
                         </div>
                         
-                        <div class="map-layer-controls">
-                            <button class="layer-btn active" data-layer="seating">Seating Zones</button>
-                            <button class="layer-btn" data-layer="gates">Gates & Parking</button>
-                            <button class="layer-btn" data-layer="concessions">Food & Drinks</button>
-                            <button class="layer-btn" data-layer="amenities">Accessibility & Restrooms</button>
+                        <div class="map-layer-controls" role="tablist" aria-label="Stadium Map Layers">
+                            <button class="layer-btn active" data-layer="seating" role="tab" aria-selected="true">Seating Zones</button>
+                            <button class="layer-btn" data-layer="gates" role="tab" aria-selected="false">Gates & Parking</button>
+                            <button class="layer-btn" data-layer="concessions" role="tab" aria-selected="false">Food & Drinks</button>
+                            <button class="layer-btn" data-layer="amenities" role="tab" aria-selected="false">Accessibility & Restrooms</button>
                         </div>
 
                         <!-- Clickable Custom SVG Stadium Map -->
@@ -322,7 +322,7 @@
                         <!-- Fan Green Wallet Widget -->
                         <div class="green-wallet-banner">
                             <div class="wallet-icon-holder">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="wallet-coin-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="wallet-coin-icon" aria-hidden="true">
                                     <circle cx="12" cy="12" r="10"/>
                                     <path d="M12 6v12"/>
                                     <path d="M17 12H7"/>
@@ -379,9 +379,10 @@
                         <!-- Message Input area -->
                         <div class="chat-input-bar">
                             <form id="fan-chat-form" class="chat-form">
+                                <label for="fan-chat-input" class="sr-only">Ask StadiumGuide AI</label>
                                 <input type="text" id="fan-chat-input" class="premium-chat-input" placeholder="Ask StadiumGuide AI..." aria-label="Ask StadiumGuide AI" required autocomplete="off">
                                 <button type="submit" id="fan-chat-submit" class="chat-send-btn" aria-label="Send message">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                         <line x1="22" y1="2" x2="11" y2="13"/>
                                         <polygon points="22 2 15 22 11 13 2 9 22 2"/>
                                     </svg>
@@ -692,9 +693,10 @@
                         <!-- Chat input -->
                         <div class="chat-input-bar">
                             <form id="ops-chat-form" class="chat-form">
+                                <label for="ops-chat-input" class="sr-only">Ask ArenaOps AI</label>
                                 <input type="text" id="ops-chat-input" class="premium-chat-input input-gold" placeholder="Ask ArenaOps AI..." aria-label="Ask ArenaOps AI" required autocomplete="off">
                                 <button type="submit" id="ops-chat-submit" class="chat-send-btn send-gold" aria-label="Send ops query">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                         <line x1="22" y1="2" x2="11" y2="13"/>
                                         <polygon points="22 2 15 22 11 13 2 9 22 2"/>
                                     </svg>
