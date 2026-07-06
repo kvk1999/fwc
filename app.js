@@ -82,10 +82,12 @@ class SmartVenueApp {
         };
 
         // Initialize Elements & Listeners
-        if (document.readyState === 'loading') {
-            window.addEventListener('DOMContentLoaded', () => this.initApp());
-        } else {
-            this.initApp();
+        if (typeof document !== 'undefined') {
+            if (document.readyState === 'loading') {
+                window.addEventListener('DOMContentLoaded', () => this.initApp());
+            } else {
+                this.initApp();
+            }
         }
     }
 
@@ -255,6 +257,17 @@ class SmartVenueApp {
                     this.updateMapDetailBox(titleText, infoText);
                 }
             });
+
+            this.stadiumSvg.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    const clickableNode = e.target.closest('.map-interactive');
+                    if (clickableNode) {
+                        e.preventDefault();
+                        // Triggers click listener logic above
+                        clickableNode.dispatchEvent(new Event('click', { bubbles: true }));
+                    }
+                }
+            });
         }
 
         // Eco-Transit Calculator trigger
@@ -363,6 +376,9 @@ class SmartVenueApp {
             // Sync active UI toggler styles
             document.getElementById('label-fan').classList.remove('active');
             document.getElementById('label-ops').classList.add('active');
+            if (this.modeToggleBtn) {
+                this.modeToggleBtn.setAttribute('aria-checked', 'true');
+            }
         } else {
             this.currentMode = 'fan';
             this.body.classList.remove('ops-mode');
@@ -372,6 +388,9 @@ class SmartVenueApp {
             // Sync active UI toggler styles
             document.getElementById('label-ops').classList.remove('active');
             document.getElementById('label-fan').classList.add('active');
+            if (this.modeToggleBtn) {
+                this.modeToggleBtn.setAttribute('aria-checked', 'false');
+            }
         }
     }
 
@@ -545,11 +564,7 @@ class SmartVenueApp {
         }, 500);
     }
 
-    /* Carbon Calculator Logic with dynamic GC Wallet Balance update */
-    calculateEcoTransit() {
-        const distance = parseFloat(this.transitDistance.value) || 1;
-        const method = this.transitMethod.value;
-
+    calculateCarbonSavings(distance, method) {
         let co2PerMile = 0.85; // Solo Gas car baseline
         let savingsPercentage = 0;
 
@@ -576,8 +591,18 @@ class SmartVenueApp {
         }
 
         const baselineEmissions = distance * 0.85;
-        const savedEmissions = (baselineEmissions - (distance * co2PerMile)).toFixed(1);
+        const savedEmissions = parseFloat((baselineEmissions - (distance * co2PerMile)).toFixed(1));
         const coinsAwarded = Math.round(savedEmissions * 2);
+
+        return { savedEmissions, coinsAwarded };
+    }
+
+    /* Carbon Calculator Logic with dynamic GC Wallet Balance update */
+    calculateEcoTransit() {
+        const distance = parseFloat(this.transitDistance.value) || 1;
+        const method = this.transitMethod.value;
+
+        const { savedEmissions, coinsAwarded } = this.calculateCarbonSavings(distance, method);
 
         // Render Results with animation
         this.carbonSavedText.innerText = `${savedEmissions} lbs CO2`;
@@ -857,18 +882,18 @@ Today is **July 6, 2026**, and we are currently in the active **Round of 16 Knoc
 **Total Venues Active Today:** 3 of 16 official host stadiums
 
 #### 🏟️ 1. MetLife Stadium (NY/NJ) — USA vs GER
-- **Match Status:** \${this.simMatches.usager.isFT ? 'COMPLETED' : this.simMatches.usager.isHT ? 'Halftime' : 'Live ' + this.simMatches.usager.time + "'"}
-- **Current Score:** 🇺🇸 **USA \${this.simMatches.usager.homeScore} - \${this.simMatches.usager.awayScore} GER** 🇩🇪
+- **Match Status:** ${this.simMatches.usager.isFT ? 'COMPLETED' : this.simMatches.usager.isHT ? 'Halftime' : 'Live ' + this.simMatches.usager.time + "'"}
+- **Current Score:** 🇺🇸 **USA ${this.simMatches.usager.homeScore} - ${this.simMatches.usager.awayScore} GER** 🇩🇪
 - **Operations Telemetry:** Gate congestion normal. Avg wait time: 8 mins. Solar power generating at 840 kW.
 
 #### 🏟️ 2. SoFi Stadium (Los Angeles) — ARG vs FRA
-- **Match Status:** \${this.simMatches.argfra.isFT ? 'COMPLETED' : this.simMatches.argfra.isHT ? 'Halftime' : 'Live ' + this.simMatches.argfra.time + "'"}
-- **Current Score:** 🇦🇷 **ARG \${this.simMatches.argfra.homeScore} - \${this.simMatches.argfra.awayScore} FRA** 🇫🇷
+- **Match Status:** ${this.simMatches.argfra.isFT ? 'COMPLETED' : this.simMatches.argfra.isHT ? 'Halftime' : 'Live ' + this.simMatches.argfra.time + "'"}
+- **Current Score:** 🇦🇷 **ARG ${this.simMatches.argfra.homeScore} - ${this.simMatches.argfra.awayScore} FRA** 🇫🇷
 - **Operations Telemetry:** High ingress at Gate B. Avg wait time: 14 mins. HVAC energy baseline optimization active.
 
 #### 🏟️ 3. Estadio Azteca (Mexico City) — MEX vs ENG
-- **Match Status:** \${this.simMatches.mexeng.isFT ? 'COMPLETED' : this.simMatches.mexeng.isHT ? 'Halftime' : 'Live ' + this.simMatches.mexeng.time + "'"}
-- **Current Score:** 🇲🇽 **MEX \${this.simMatches.mexeng.homeScore} - \${this.simMatches.mexeng.awayScore} ENG** 🏴󠁧󠁢󠁥󠁮󠁧󠁿
+- **Match Status:** ${this.simMatches.mexeng.isFT ? 'COMPLETED' : this.simMatches.mexeng.isHT ? 'Halftime' : 'Live ' + this.simMatches.mexeng.time + "'"}
+- **Current Score:** 🇲🇽 **MEX ${this.simMatches.mexeng.homeScore} - ${this.simMatches.mexeng.awayScore} ENG** 🏴󠁧󠁢󠁥󠁮󠁧󠁿
 - **Operations Telemetry:** Warm climate grid load high. Solar offset at 920 kW. Circular economy waste management bins at 68% capacity.
 
 #### 📊 Knockout Standings & Historical Data:
@@ -901,14 +926,14 @@ Today is **July 6, 2026**, and we are currently in the active **Round of 16 Knoc
 **Eco-Performance Index:** 86.2% (Target: >85%).
 
 #### ⚡ Solar & Smart Grid:
-- **Solar Generation**: Peak generation at **\${this.telemetry.solar} kW** supplying 42% of stadium light arrays.
+- **Solar Generation**: Peak generation at **${this.telemetry.solar} kW** supplying 42% of stadium light arrays.
 - **HVAC Eco-Optima**: Running on Intelligent Power Savings setting. Energy consumption baseline decreased by **18.5%**.
 
 #### 💧 Rainwater Harvesting:
-- Current reservoir levels: **\${this.telemetry.rainwater} Gallons**. Harvesting system fully active, supplying 100% of field irrigation and restroom flushing needs.
+- Current reservoir levels: **${this.telemetry.rainwater} Gallons**. Harvesting system fully active, supplying 100% of field irrigation and restroom flushing needs.
 
 #### ♻️ Circular Economy & Waste:
-- **Smart Bin Alerts**: Sector 114 bin (Gate D perimeter) is at **\${this.telemetry.bin3}% capacity**. 
+- **Smart Bin Alerts**: Sector 114 bin (Gate D perimeter) is at **${this.telemetry.bin3}% capacity**. 
 - **Action Directed**: Scheduled automated collection route. Cleaning staff dispatched with compost transport carts to relieve Sector 114 before overflow hazard.
 - **Green Coin Reward Payout**: 24,812 GC paid out to 852 participating transit fans today.`;
         }
@@ -916,12 +941,12 @@ Today is **July 6, 2026**, and we are currently in the active **Round of 16 Knoc
         if (clean.includes('incident') || clean.includes('ticket') || clean.includes('alert') || clean.includes('staff')) {
             return `### 📋 ACTIVE INCIDENT QUEUE BRIEF & STAFFING METRICS
             
-**Total Open Incident Tickets:** \${this.activeIncidentsCount} (1 Critical, 1 Medium)
+**Total Open Incident Tickets:** ${this.activeIncidentsCount} (1 Critical, 1 Medium)
 **Active Volunteers in Field:** 48 units.
 
 #### 1. CRITICAL: Gate D Crowd Bottle-neck (In progress)
 - **Assigned Force**: 8 marshals.
-- **AI Status**: Live redirection push notifications active. Wait lines reduced from 26m down to **\${this.telemetry.avgWait}m**.
+- **AI Status**: Live redirection push notifications active. Wait lines reduced from 26m down to **${this.telemetry.avgWait}m**.
 
 #### 2. MEDIUM: Wheelchair Assistance Section 119 (Dispatched)
 - **Assigned Force**: Volunteer ID #409.
@@ -1279,10 +1304,21 @@ A thrilling goal has been scored at **${venue.name}**!
         this.opsChatMessages.scrollTop = this.opsChatMessages.scrollHeight;
     }
 
+    escapeHTML(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
     /* Helper Chat styling */
     appendChatMessage(container, avatar, text, className) {
+        let escapedText = this.escapeHTML(text);
         // Convert mock markdown **bold** to actual HTML formatting
-        let formattedText = text
+        let formattedText = escapedText
             .replace(/\n/g, '<br>')
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/### (.*?)(<br>|$)/g, '<h3>$1</h3>')
@@ -1439,5 +1475,11 @@ A thrilling goal has been scored at **${venue.name}**!
 }
 
 // Global App Instance
-const app = new SmartVenueApp();
-window.app = app; // expose to window for onclick handlers
+if (typeof window !== 'undefined') {
+    const app = new SmartVenueApp();
+    window.app = app; // expose to window for onclick handlers
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports = { SmartVenueApp };
+}

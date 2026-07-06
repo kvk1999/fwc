@@ -1,0 +1,11 @@
+{
+  "name": "fwc-smartvenue-hub",
+  "version": "1.0.0",
+  "description": "FIFA World Cup 2026 SmartVenue Hub",
+  "main": "app.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test test.js"
+  },
+  "dependencies": {}
+}

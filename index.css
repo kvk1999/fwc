@@ -1845,6 +1845,8 @@ body.ops-mode .user-msg .msg-bubble {
     width: 100%;
     overflow-x: auto;
     padding-bottom: 0.5rem;
+    content-visibility: auto;
+    contain-intrinsic-size: 500px;
 }
 
 .bracket-tree {
@@ -1962,6 +1964,8 @@ body.ops-mode .user-msg .msg-bubble {
     margin-top: 1rem;
     border-top: 1px solid rgba(255,255,255,0.06);
     padding-top: 1.5rem;
+    content-visibility: auto;
+    contain-intrinsic-size: 500px;
 }
 
 .venues-metrics-table-wrapper h3 {

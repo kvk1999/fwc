@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FWC 2026 SmartVenue Hub - GenAI Stadium Operations & Fan Companion</title>
     <meta name="description" content="State-of-the-art GenAI-enabled stadium experience and real-time operations console for the FIFA World Cup 2026. Empowering fans and organizers.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -79,7 +80,7 @@
                 <!-- Mode Toggler Switch -->
                 <div class="mode-toggler-container">
                     <span class="mode-label active" id="label-fan">Fan Portal</span>
-                    <button id="mode-toggle-btn" class="toggle-switch-btn" aria-label="Toggle user modes">
+                    <button id="mode-toggle-btn" class="toggle-switch-btn" role="switch" aria-checked="false" aria-label="Toggle user modes">
                         <span class="toggle-slider"></span>
                     </button>
                     <span class="mode-label" id="label-ops">V-Ops Control</span>
@@ -89,7 +90,7 @@
     </header>
 
     <!-- Main Container Layout -->
-    <main class="app-viewport">
+    <main class="app-viewport" role="main">
         
         <!-- Live Countdown & Status Ribbon -->
         <section class="live-match-ribbon" id="match-ribbon">
@@ -114,10 +115,10 @@
         </section>
 
         <!-- Live Tournament Multi-Match Ticker Bar -->
-        <section class="tournament-ticker-bar">
+        <section class="tournament-ticker-bar" aria-label="Tournament Live Feeds Ticker">
             <div class="ticker-wrapper">
                 <div class="ticker-title">LIVE MULTI-VENUE FEEDS (July 6, 2026):</div>
-                <div class="ticker-scroll" id="live-ticker-matches">
+                <div class="ticker-scroll" id="live-ticker-matches" role="marquee" aria-live="off" aria-label="Live match ticker feeds">
                     <div class="ticker-match-card active-match">
                         <span class="t-city">LA (SoFi)</span>
                         <span class="t-teams" id="ticker-teams-argfra">ARG 🇦🇷 1-1 🇫🇷 FRA</span>
@@ -181,7 +182,7 @@
 
                         <!-- Clickable Custom SVG Stadium Map -->
                         <div class="stadium-map-wrapper">
-                            <svg id="interactive-stadium-svg" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+                            <svg id="interactive-stadium-svg" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Interactive Stadium Wayfinding Map">
                                 <!-- Background grid effects -->
                                 <defs>
                                     <radialGradient id="stadiumGlow" cx="50%" cy="50%" r="50%">
@@ -200,45 +201,45 @@
                                 
                                 <!-- Outer Gates (Interactive Group) -->
                                 <g class="map-layer" id="layer-gates" style="display:none;">
-                                    <circle cx="300" cy="50" r="14" class="map-interactive gate-node" id="gate-1" data-info="Gate A (North Entrance) - Smooth Flow. Wait time: 2 mins." />
+                                    <circle cx="300" cy="50" r="14" class="map-interactive gate-node" id="gate-1" role="button" tabindex="0" aria-label="Gate A (North Entrance) - Smooth Flow. Wait time: 2 mins." data-info="Gate A (North Entrance) - Smooth Flow. Wait time: 2 mins." />
                                     <text x="300" y="54" class="gate-label">A</text>
 
-                                    <circle cx="450" cy="200" r="14" class="map-interactive gate-node" id="gate-2" data-info="Gate B (East Entrance) - Moderate queue. Wait time: 8 mins." />
+                                    <circle cx="450" cy="200" r="14" class="map-interactive gate-node" id="gate-2" role="button" tabindex="0" aria-label="Gate B (East Entrance) - Moderate queue. Wait time: 8 mins." data-info="Gate B (East Entrance) - Moderate queue. Wait time: 8 mins." />
                                     <text x="450" y="204" class="gate-label">B</text>
 
-                                    <circle cx="300" cy="350" r="14" class="map-interactive gate-node" id="gate-3" data-info="Gate C (South Entrance) - Smooth Flow. Wait time: 3 mins." />
+                                    <circle cx="300" cy="350" r="14" class="map-interactive gate-node" id="gate-3" role="button" tabindex="0" aria-label="Gate C (South Entrance) - Smooth Flow. Wait time: 3 mins." data-info="Gate C (South Entrance) - Smooth Flow. Wait time: 3 mins." />
                                     <text x="300" y="354" class="gate-label">C</text>
 
-                                    <circle cx="150" cy="200" r="14" class="map-interactive gate-node warning" id="gate-4" data-info="Gate D (West Entrance) - HEAVY CONGESTION. Rerouting recommended. Wait time: 22 mins." />
+                                    <circle cx="150" cy="200" r="14" class="map-interactive gate-node warning" id="gate-4" role="button" tabindex="0" aria-label="Gate D (West Entrance) - HEAVY CONGESTION. Rerouting recommended. Wait time: 22 mins." data-info="Gate D (West Entrance) - HEAVY CONGESTION. Rerouting recommended. Wait time: 22 mins." />
                                     <text x="150" y="204" class="gate-label">D</text>
                                 </g>
 
                                 <!-- Seating Sectors (Interactive Path Sections) -->
                                 <g class="map-layer active-layer" id="layer-seating">
                                     <!-- Top Left Sector -->
-                                    <path d="M 220,180 A 80,60 0 0,1 300,140 L 300,90 A 130,110 0 0,0 170,180 Z" class="map-interactive sector-path s-northwest" data-info="Category 2 - Section 101-105. Access via Gate A." />
+                                    <path d="M 220,180 A 80,60 0 0,1 300,140 L 300,90 A 130,110 0 0,0 170,180 Z" class="map-interactive sector-path s-northwest" role="button" tabindex="0" aria-label="Category 2 - Section 101-105. Access via Gate A." data-info="Category 2 - Section 101-105. Access via Gate A." />
                                     <!-- Top Right Sector -->
-                                    <path d="M 300,140 A 80,60 0 0,1 380,180 L 430,180 A 130,110 0 0,0 300,90 Z" class="map-interactive sector-path s-northeast" data-info="Category 1 - Section 106-110 (Premium Midfield). Access via Gate B." />
+                                    <path d="M 300,140 A 80,60 0 0,1 380,180 L 430,180 A 130,110 0 0,0 300,90 Z" class="map-interactive sector-path s-northeast" role="button" tabindex="0" aria-label="Category 1 - Section 106-110 (Premium Midfield). Access via Gate B." data-info="Category 1 - Section 106-110 (Premium Midfield). Access via Gate B." />
                                     <!-- Bottom Right Sector -->
-                                    <path d="M 380,220 A 80,60 0 0,1 300,260 L 300,310 A 130,110 0 0,0 430,220 Z" class="map-interactive sector-path s-southeast" data-info="Category 2 - Section 111-115. Access via Gate B or C." />
+                                    <path d="M 380,220 A 80,60 0 0,1 300,260 L 300,310 A 130,110 0 0,0 430,220 Z" class="map-interactive sector-path s-southeast" role="button" tabindex="0" aria-label="Category 2 - Section 111-115. Access via Gate B or C." data-info="Category 2 - Section 111-115. Access via Gate B or C." />
                                     <!-- Bottom Left Sector -->
-                                    <path d="M 300,260 A 80,60 0 0,1 220,220 L 170,220 A 130,110 0 0,0 300,310 Z" class="map-interactive sector-path s-southwest" data-info="Category 3 - Section 116-120. Access via Gate D (Congested)." />
+                                    <path d="M 300,260 A 80,60 0 0,1 220,220 L 170,220 A 130,110 0 0,0 300,310 Z" class="map-interactive sector-path s-southwest" role="button" tabindex="0" aria-label="Category 3 - Section 116-120. Access via Gate D (Congested)." data-info="Category 3 - Section 116-120. Access via Gate D (Congested)." />
                                 </g>
 
                                 <!-- Concessions (Interactive Icons) -->
                                 <g class="map-layer" id="layer-concessions" style="display:none;">
-                                    <circle cx="210" cy="130" r="10" class="map-interactive concession-node food" id="food-1" data-info="Arena Tacos & Nachos • Section 102 • Wait time: ~15 mins. Wheelchair Accessible Counter available." />
-                                    <circle cx="390" cy="130" r="10" class="map-interactive concession-node drink" id="drink-1" data-info="FIFA Fan Zone Bar • Section 108 • Wait time: ~5 mins. Eco-cups available." />
-                                    <circle cx="390" cy="270" r="10" class="map-interactive concession-node food" id="food-2" data-info="MetLife Burger Grill • Section 113 • Wait time: ~12 mins. Digital Pre-ordering enabled." />
-                                    <circle cx="210" cy="270" r="10" class="map-interactive concession-node merch" id="merch-1" data-info="Official FIFA World Cup Megastore • Section 118 • Wait time: ~8 mins. Card payments only." />
+                                    <circle cx="210" cy="130" r="10" class="map-interactive concession-node food" id="food-1" role="button" tabindex="0" aria-label="Arena Tacos & Nachos • Section 102 • Wait time: ~15 mins. Wheelchair Accessible Counter available." data-info="Arena Tacos & Nachos • Section 102 • Wait time: ~15 mins. Wheelchair Accessible Counter available." />
+                                    <circle cx="390" cy="130" r="10" class="map-interactive concession-node drink" id="drink-1" role="button" tabindex="0" aria-label="FIFA Fan Zone Bar • Section 108 • Wait time: ~5 mins. Eco-cups available." data-info="FIFA Fan Zone Bar • Section 108 • Wait time: ~5 mins. Eco-cups available." />
+                                    <circle cx="390" cy="270" r="10" class="map-interactive concession-node food" id="food-2" role="button" tabindex="0" aria-label="MetLife Burger Grill • Section 113 • Wait time: ~12 mins. Digital Pre-ordering enabled." data-info="MetLife Burger Grill • Section 113 • Wait time: ~12 mins. Digital Pre-ordering enabled." />
+                                    <circle cx="210" cy="270" r="10" class="map-interactive concession-node merch" id="merch-1" role="button" tabindex="0" aria-label="Official FIFA World Cup Megastore • Section 118 • Wait time: ~8 mins. Card payments only." data-info="Official FIFA World Cup Megastore • Section 118 • Wait time: ~8 mins. Card payments only." />
                                 </g>
 
                                 <!-- Amenities (Accessibility, Restrooms) -->
                                 <g class="map-layer" id="layer-amenities" style="display:none;">
-                                    <circle cx="250" cy="110" r="10" class="map-interactive amenity-node restroom" id="restroom-1" data-info="Main Restrooms (Male/Female) • Sec 103 • Wait: 2 mins. Fully Accessible." />
-                                    <circle cx="350" cy="110" r="10" class="map-interactive amenity-node medical" id="medical-1" data-info="First Aid & Medical Station • Sec 107 • Wait: None. Equipped with translation staff." />
-                                    <circle cx="350" cy="290" r="10" class="map-interactive amenity-node restroom" id="restroom-2" data-info="Family Restroom & Baby Care • Sec 114 • Wait: 4 mins." />
-                                    <circle cx="250" cy="290" r="10" class="map-interactive amenity-node accessibility" id="access-1" data-info="Wheelchair Assistance & Lift Station • Sec 119. Free wheelchair rental and volunteer escort." />
+                                    <circle cx="250" cy="110" r="10" class="map-interactive amenity-node restroom" id="restroom-1" role="button" tabindex="0" aria-label="Main Restrooms (Male/Female) • Sec 103 • Wait: 2 mins. Fully Accessible." data-info="Main Restrooms (Male/Female) • Sec 103 • Wait: 2 mins. Fully Accessible." />
+                                    <circle cx="350" cy="110" r="10" class="map-interactive amenity-node medical" id="medical-1" role="button" tabindex="0" aria-label="First Aid & Medical Station • Sec 107 • Wait: None. Equipped with translation staff." data-info="First Aid & Medical Station • Sec 107 • Wait: None. Equipped with translation staff." />
+                                    <circle cx="350" cy="290" r="10" class="map-interactive amenity-node restroom" id="restroom-2" role="button" tabindex="0" aria-label="Family Restroom & Baby Care • Sec 114 • Wait: 4 mins." data-info="Family Restroom & Baby Care • Sec 114 • Wait: 4 mins." />
+                                    <circle cx="250" cy="290" r="10" class="map-interactive amenity-node accessibility" id="access-1" role="button" tabindex="0" aria-label="Wheelchair Assistance & Lift Station • Sec 119. Free wheelchair rental and volunteer escort." data-info="Wheelchair Assistance & Lift Station • Sec 119. Free wheelchair rental and volunteer escort." />
                                 </g>
 
                                 <!-- Pitch / Center Field -->
@@ -356,7 +357,7 @@
                         </div>
 
                         <!-- Chat messages log -->
-                        <div class="chat-messages-container" id="fan-chat-messages">
+                        <div class="chat-messages-container" id="fan-chat-messages" role="log" aria-live="polite" aria-label="Fan chat history">
                             <!-- System Greeting message -->
                             <div class="message assistant-msg">
                                 <div class="msg-avatar font-awesome-avatar">🤖</div>
@@ -378,7 +379,7 @@
                         <!-- Message Input area -->
                         <div class="chat-input-bar">
                             <form id="fan-chat-form" class="chat-form">
-                                <input type="text" id="fan-chat-input" class="premium-chat-input" placeholder="Ask StadiumGuide AI..." required autocomplete="off">
+                                <input type="text" id="fan-chat-input" class="premium-chat-input" placeholder="Ask StadiumGuide AI..." aria-label="Ask StadiumGuide AI" required autocomplete="off">
                                 <button type="submit" id="fan-chat-submit" class="chat-send-btn" aria-label="Send message">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                         <line x1="22" y1="2" x2="11" y2="13"/>
@@ -670,7 +671,7 @@
                         </div>
 
                         <!-- Chat log -->
-                        <div class="chat-messages-container" id="ops-chat-messages">
+                        <div class="chat-messages-container" id="ops-chat-messages" role="log" aria-live="polite" aria-label="Operations chat history">
                             <div class="message assistant-msg ops">
                                 <div class="msg-avatar font-awesome-avatar gold-bg">📊</div>
                                 <div class="msg-bubble">
@@ -691,7 +692,7 @@
                         <!-- Chat input -->
                         <div class="chat-input-bar">
                             <form id="ops-chat-form" class="chat-form">
-                                <input type="text" id="ops-chat-input" class="premium-chat-input input-gold" placeholder="Ask ArenaOps AI..." required autocomplete="off">
+                                <input type="text" id="ops-chat-input" class="premium-chat-input input-gold" placeholder="Ask ArenaOps AI..." aria-label="Ask ArenaOps AI" required autocomplete="off">
                                 <button type="submit" id="ops-chat-submit" class="chat-send-btn send-gold" aria-label="Send ops query">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                         <line x1="22" y1="2" x2="11" y2="13"/>
@@ -710,7 +711,7 @@
     </main>
 
     <!-- Interactive Glassmorphic Tournament Bracket Modal Overlay -->
-    <div class="modal-overlay" id="bracket-modal">
+    <div class="modal-overlay" id="bracket-modal" role="dialog" aria-modal="true" aria-label="FIFA World Cup 2026 Knockout Bracket and Venue Table">
         <div class="modal-card glassmorphic">
             <div class="modal-header">
                 <div class="modal-title-area">
@@ -720,7 +721,7 @@
                         <p>Round of 16 Phase • Live Telemetry Ingestion (July 6, 2026)</p>
                     </div>
                 </div>
-                <button class="close-modal-btn" id="close-bracket-btn">&times;</button>
+                <button class="close-modal-btn" id="close-bracket-btn" aria-label="Close bracket modal">&times;</button>
             </div>
             
             <div class="modal-body">
