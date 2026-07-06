@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FWC 2026 SmartVenue Hub - GenAI Stadium Operations & Fan Companion</title>
     <meta name="description" content="State-of-the-art GenAI-enabled stadium experience and real-time operations console for the FIFA World Cup 2026. Empowering fans and organizers.">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self'; img-src 'self' data:; connect-src 'self';">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,7 +73,7 @@
                 </div>
 
                 <!-- Toggle Bracket modal button -->
-                <button id="bracket-toggle-btn" class="action-btn gold-btn header-bracket-btn">
+                <button id="bracket-toggle-btn" class="action-btn gold-btn header-bracket-btn" aria-label="View Bracket and Standings">
                     🏆 Bracket & Standings
                 </button>
 
@@ -632,7 +632,7 @@
                                     <p class="inc-desc">Crowd levels peaked over 1,100 ppm. High queue time causing delays.</p>
                                     <div class="inc-ai-action">
                                         <strong>GenAI Dispatch recommendation:</strong> 8 Spanish/French translation escorts and 5 venue crowd fluid guides ready to re-route via Gate B.
-                                        <button class="dispatch-btn" onclick="app.dispatchVolunteers('inc-1', 'Deployed crowd marshals to Gate D to initiate secondary screening pathways.')">Execute Dispatch Plan</button>
+                                        <button class="dispatch-btn" data-incident-id="inc-1" data-dispatch-msg="Deployed crowd marshals to Gate D to initiate secondary screening pathways.">Execute Dispatch Plan</button>
                                     </div>
                                 </div>
 
@@ -646,7 +646,7 @@
                                     <p class="inc-desc">Family requires wheelchair shuttle escort from Section 119 lift to Metro link.</p>
                                     <div class="inc-ai-action">
                                         <strong>GenAI Dispatch recommendation:</strong> Assign nearest Volunteer ID #409 (equipped with wheelchair kit, speaking EN/DE).
-                                        <button class="dispatch-btn" onclick="app.dispatchVolunteers('inc-2', 'Volunteer #409 dispatched to Lift Section 119 with mobility chair.')">Assign Volunteer #409</button>
+                                        <button class="dispatch-btn" data-incident-id="inc-2" data-dispatch-msg="Volunteer #409 dispatched to Lift Section 119 with mobility chair.">Assign Volunteer #409</button>
                                     </div>
                                 </div>
                             </div>

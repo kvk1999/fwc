@@ -343,6 +343,18 @@ class SmartVenueApp {
         if (this.simulateIncidentBtn) {
             this.simulateIncidentBtn.addEventListener('click', () => this.simulateNewIncident());
         }
+        if (this.incidentList) {
+            this.incidentList.addEventListener('click', (e) => {
+                const dispatchBtn = e.target.closest('.dispatch-btn');
+                if (dispatchBtn) {
+                    const incidentId = dispatchBtn.getAttribute('data-incident-id');
+                    const dispatchMsg = dispatchBtn.getAttribute('data-dispatch-msg');
+                    if (incidentId && dispatchMsg) {
+                        this.dispatchVolunteers(incidentId, dispatchMsg);
+                    }
+                }
+            });
+        }
         if (this.triggerRerouteBtn) {
             this.triggerRerouteBtn.addEventListener('click', () => this.triggerOpsReroute());
         }
@@ -1050,7 +1062,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
             <p class="inc-desc">${template.desc}</p>
             <div class="inc-ai-action">
                 <strong>GenAI Dispatch recommendation:</strong> ${template.ai}
-                <button class="dispatch-btn" onclick="app.dispatchVolunteers('${template.id}', 'Simulated dispatch completed. Field staff reported on-scene and resolved.')">Execute Dispatch Plan</button>
+                <button class="dispatch-btn" data-incident-id="${template.id}" data-dispatch-msg="Simulated dispatch completed. Field staff reported on-scene and resolved.">Execute Dispatch Plan</button>
             </div>
         `;
 
@@ -1480,7 +1492,7 @@ A thrilling goal has been scored at **${venue.name}**!
 // Global App Instance
 if (typeof window !== 'undefined') {
     const app = new SmartVenueApp();
-    window.app = app; // expose to window for onclick handlers
+    window.app = app; // expose to window for diagnostics
 }
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
