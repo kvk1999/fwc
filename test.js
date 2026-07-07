@@ -545,5 +545,50 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         // EV: CO2 saved = 10.52 * 0.6 = 6.312. Coins = Math.round(6.312 * 2) = 13 coins.
         assert.strictEqual(testApp.walletBalance, 113);
     });
+
+    await t.test('9. Robust Markdown to DOM Parsing Helper Validation', () => {
+        const testApp = new SmartVenueApp();
+        
+        // Setup simple global document mocks for element creation
+        global.document = {
+            createElement: (tag) => {
+                const element = {
+                    tagName: tag.toUpperCase(),
+                    children: [],
+                    appendChild: function(child) {
+                        this.children.push(child);
+                        return child;
+                    },
+                    style: {},
+                    _textContent: '',
+                    get textContent() {
+                        if (this.children.length > 0) {
+                            return this.children.map(c => c.textContent).join('');
+                        }
+                        return this._textContent;
+                    },
+                    set textContent(val) {
+                        this._textContent = val;
+                    },
+                    createTextNode: (txt) => {
+                        return { textContent: txt };
+                    }
+                };
+                return element;
+            },
+            createTextNode: (txt) => {
+                return { textContent: txt };
+            }
+        };
+
+        const mdText = `# Header 1\n## Header 2\n### Header 3\n#### Header 4\n* Bullet item 1\n- Bullet item 2\nStandard **bold** line`;
+        const resultDOM = testApp.parseMarkdownToDOM(mdText);
+        
+        assert.strictEqual(resultDOM.tagName, 'DIV');
+        assert.ok(resultDOM.children.length > 0);
+        
+        // Cleanup global document
+        delete global.document;
+    });
 });
 
