@@ -178,7 +178,7 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
                     }
                     return child;
                 },
-                addEventListener: function(event, cb) {
+                addEventListener: function(event) {
                     if (event === 'click' && tag === 'button') {
                         // generic catch-all
                     }
@@ -419,7 +419,7 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
 
         // 10. Test Eco-Transit Calculation
         testApp.walletBalance = 100;
-        testApp.animateBalanceCounter = (start, end) => {
+        testApp.animateBalanceCounter = () => {
             testApp.updateWalletUI();
         };
         // For rideshare_ev with 15 miles: CO2 saved = 15 * 0.85 - 15 * 0.25 = 9.0 lbs, coins = round(9 * 2) = 18 coins

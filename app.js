@@ -334,7 +334,7 @@ class SmartVenueApp {
         // Interactive Map Layers
         if (this.layerBtns) {
             this.layerBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
+                btn.addEventListener('click', () => {
                     this.layerBtns.forEach(b => {
                         b.classList.remove('active');
                         b.setAttribute('aria-selected', 'false');
@@ -742,28 +742,22 @@ class SmartVenueApp {
 
     calculateCarbonSavings(distance, method) {
         let co2PerMile = 0.85; // Solo Gas car baseline
-        let savingsPercentage = 0;
 
         switch(method) {
             case 'metro':
                 co2PerMile = 0.05;
-                savingsPercentage = 94;
                 break;
             case 'shuttle':
                 co2PerMile = 0.15;
-                savingsPercentage = 82;
                 break;
             case 'carpool':
                 co2PerMile = 0.35;
-                savingsPercentage = 58;
                 break;
             case 'rideshare_ev':
                 co2PerMile = 0.25;
-                savingsPercentage = 70;
                 break;
             default:
                 co2PerMile = 0.85;
-                savingsPercentage = 0;
         }
 
         const baselineEmissions = distance * 0.85;
@@ -776,7 +770,7 @@ class SmartVenueApp {
     /* Carbon Calculator Logic with dynamic GC Wallet Balance update */
     calculateEcoTransit() {
         // Rigorous input filtering and bounds checks
-        let rawValue = this.transitDistance ? String(this.transitDistance.value) : "1";
+        const rawValue = this.transitDistance ? String(this.transitDistance.value) : "1";
         // Sanitization using regex: allow only digits and at most one decimal point
         let sanitizedValue = rawValue.replace(/[^0-9.]/g, '');
         // Handle multiple decimals (only keep the first decimal)
@@ -1200,7 +1194,7 @@ I am ingesting live stadium telemetry. You can run pre-modeled situational analy
             }
 
             // Add volunteers
-            const currentVolunteers = parseInt(this.volunteerReadyText.textContent) || 48;
+            const currentVolunteers = parseInt(this.volunteerReadyText.textContent, 10) || 48;
             this.volunteerReadyText.textContent = `${currentVolunteers + 3} Volunteers Active`;
 
             this.showAlert(`✅ DISPATCH NOTIFICATION SENT:\n"${completionMessage}"`, 'success');
@@ -1547,24 +1541,49 @@ A thrilling goal has been scored at **${venue.name}**!
     parseMarkdownToDOM(text) {
         const container = document.createElement('div');
         const lines = text.split('\n');
+        let currentUl = null;
+
         lines.forEach((line, index) => {
-            if (index > 0) {
-                container.appendChild(document.createElement('br'));
-            }
-            if (line.trim().startsWith('### ')) {
-                const h3 = document.createElement('h3');
-                this.parseInlineFormatting(line.trim().substring(4), h3);
-                container.appendChild(h3);
-            } else if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
+            const trimmed = line.trim();
+            const isBullet = trimmed.startsWith('* ') || trimmed.startsWith('- ');
+
+            if (isBullet) {
+                if (!currentUl) {
+                    currentUl = document.createElement('ul');
+                    container.appendChild(currentUl);
+                }
                 const li = document.createElement('li');
-                const cleanLine = line.trim();
-                const startIdx = cleanLine.startsWith('* ') ? 2 : 2;
-                this.parseInlineFormatting(cleanLine.substring(startIdx), li);
-                container.appendChild(li);
+                const startIdx = trimmed.startsWith('* ') ? 2 : 2;
+                this.parseInlineFormatting(trimmed.substring(startIdx), li);
+                currentUl.appendChild(li);
             } else {
-                const span = document.createElement('span');
-                this.parseInlineFormatting(line, span);
-                container.appendChild(span);
+                currentUl = null;
+
+                if (index > 0) {
+                    container.appendChild(document.createElement('br'));
+                }
+
+                if (trimmed.startsWith('# ')) {
+                    const h1 = document.createElement('h1');
+                    this.parseInlineFormatting(trimmed.substring(2), h1);
+                    container.appendChild(h1);
+                } else if (trimmed.startsWith('## ')) {
+                    const h2 = document.createElement('h2');
+                    this.parseInlineFormatting(trimmed.substring(3), h2);
+                    container.appendChild(h2);
+                } else if (trimmed.startsWith('### ')) {
+                    const h3 = document.createElement('h3');
+                    this.parseInlineFormatting(trimmed.substring(4), h3);
+                    container.appendChild(h3);
+                } else if (trimmed.startsWith('#### ')) {
+                    const h4 = document.createElement('h4');
+                    this.parseInlineFormatting(trimmed.substring(5), h4);
+                    container.appendChild(h4);
+                } else {
+                    const span = document.createElement('span');
+                    this.parseInlineFormatting(line, span);
+                    container.appendChild(span);
+                }
             }
         });
         return container;
