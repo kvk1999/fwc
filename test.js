@@ -301,11 +301,11 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         };
 
         let lastAlertMsg = '';
-        global.alert = (msg) => {
-            lastAlertMsg = msg;
-        };
 
         const testApp = new SmartVenueApp();
+        testApp.onAlert = (msg) => {
+            lastAlertMsg = msg;
+        };
 
         // Assign mock elements explicitly to ensure pointers are mapped
         testApp.body = generalMockElement;
@@ -473,23 +473,24 @@ test('FIFA World Cup 2026 SmartVenue Hub Suite', async (t) => {
         assert.ok(testApp.venueData.metlife.score.includes("2 - 2 ("));
         assert.ok(testApp.venueData.metlife.score.includes("pen)"));
 
-        // 16. Test HVAC Smart Eco Mode toggling
+        // 16. Test HVAC Smart Eco Mode toggling and Accessibility dynamic states
         assert.ok(ecoPowerClickCallback);
         const initialSolar = testApp.telemetry.solar;
         
-        // Toggle on (it starts inactive)
+        // Toggle on (it starts inactive inside test setup)
         ecoPowerClickCallback();
         assert.strictEqual(testApp.telemetry.solar, initialSolar + 35);
         assert.strictEqual(testSolarInText.textContent, `${initialSolar + 35} kW`);
+        assert.strictEqual(testEcoPowerBtn.getAttribute('aria-pressed'), 'true');
         
         // Toggle off
         ecoPowerClickCallback();
         assert.strictEqual(testApp.telemetry.solar, initialSolar);
         assert.strictEqual(testSolarInText.textContent, `${initialSolar} kW`);
+        assert.strictEqual(testEcoPowerBtn.getAttribute('aria-pressed'), 'false');
 
         // Clean up global mocks
         delete global.document;
-        delete global.alert;
         global.setInterval = originalSetInterval;
         global.clearInterval = originalClearInterval;
     });

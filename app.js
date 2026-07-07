@@ -178,8 +178,8 @@ class SmartVenueApp {
     showAlert(message, type = 'info') {
         this.showToast(message, type);
         
-        if (typeof window === 'undefined' && typeof global !== 'undefined' && typeof global.alert === 'function') {
-            global.alert(message);
+        if (typeof this.onAlert === 'function') {
+            this.onAlert(message);
         }
     }
 
@@ -465,15 +465,16 @@ class SmartVenueApp {
         
         if (this.ecoPowerBtn) {
             this.ecoPowerBtn.addEventListener('click', () => {
-                this.ecoPowerBtn.classList.toggle('active');
-                if (this.ecoPowerBtn.classList.contains('active')) {
+                const isActive = this.ecoPowerBtn.classList.toggle('active');
+                this.ecoPowerBtn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+                if (isActive) {
                     this.ecoPowerBtn.textContent = "⚡ HVAC Smart Eco mode (ACTIVE)";
                     this.telemetry.solar += 35;
-                    this.solarInText.textContent = `${this.telemetry.solar} kW`;
+                    if (this.solarInText) this.solarInText.textContent = `${this.telemetry.solar} kW`;
                 } else {
                     this.ecoPowerBtn.textContent = "AI Intelligent HVAC Eco Mode";
                     this.telemetry.solar -= 35;
-                    this.solarInText.textContent = `${this.telemetry.solar} kW`;
+                    if (this.solarInText) this.solarInText.textContent = `${this.telemetry.solar} kW`;
                 }
             });
         }
@@ -1619,6 +1620,16 @@ A thrilling goal has been scored at **${venue.name}**!
 
         const avatarDiv = document.createElement('div');
         avatarDiv.className = `msg-avatar ${className.includes('ops') ? 'gold-bg' : ''}`;
+        avatarDiv.setAttribute('role', 'img');
+        if (avatar === '👤') {
+            avatarDiv.setAttribute('aria-label', 'User Profile Icon');
+        } else if (avatar === '🤖') {
+            avatarDiv.setAttribute('aria-label', 'StadiumGuide AI Robot');
+        } else if (avatar === '📊') {
+            avatarDiv.setAttribute('aria-label', 'ArenaOps Console Chart');
+        } else {
+            avatarDiv.setAttribute('aria-label', 'Avatar Icon');
+        }
         avatarDiv.textContent = avatar;
 
         const bubbleDiv = document.createElement('div');
@@ -1640,6 +1651,8 @@ A thrilling goal has been scored at **${venue.name}**!
 
         const avatarDiv = document.createElement('div');
         avatarDiv.className = 'msg-avatar';
+        avatarDiv.setAttribute('role', 'img');
+        avatarDiv.setAttribute('aria-label', 'StadiumGuide AI Robot');
         avatarDiv.textContent = '🤖';
 
         const bubbleDiv = document.createElement('div');

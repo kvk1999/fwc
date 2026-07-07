@@ -74,7 +74,7 @@
 
                 <!-- Toggle Bracket modal button -->
                 <button id="bracket-toggle-btn" class="action-btn gold-btn header-bracket-btn" aria-expanded="false" aria-label="View Bracket and Standings">
-                    🏆 Bracket & Standings
+                    <span role="img" aria-label="Trophy">🏆</span> Bracket & Standings
                 </button>
 
                 <!-- Mode Toggler Switch -->
@@ -96,9 +96,9 @@
         <section class="live-match-ribbon" id="match-ribbon">
             <div class="ribbon-content">
                 <div class="match-teams">
-                    <span class="country-badge">USA <span class="flag-icon">🇺🇸</span></span>
+                    <span class="country-badge">USA <span class="flag-icon" role="img" aria-label="United States Flag">🇺🇸</span></span>
                     <span class="vs-text">VS</span>
-                    <span class="country-badge">GERMANY <span class="flag-icon">🇩🇪</span></span>
+                    <span class="country-badge">GERMANY <span class="flag-icon" role="img" aria-label="Germany Flag">🇩🇪</span></span>
                     <span class="match-score-pill mono-num" id="ribbon-score">2 - 1</span>
                     <span class="match-time-pill live-badge" id="ribbon-time">88'</span>
                 </div>
@@ -121,27 +121,27 @@
                 <div class="ticker-scroll" id="live-ticker-matches" role="marquee" aria-live="off" aria-label="Live match ticker feeds">
                     <div class="ticker-match-card active-match">
                         <span class="t-city">LA (SoFi)</span>
-                        <span class="t-teams" id="ticker-teams-argfra">ARG 🇦🇷 1-1 🇫🇷 FRA</span>
+                        <span class="t-teams" id="ticker-teams-argfra">ARG <span role="img" aria-label="Argentina Flag">🇦🇷</span> 1-1 <span role="img" aria-label="France Flag">🇫🇷</span> FRA</span>
                         <span class="t-time blinking" id="ticker-time-argfra">74'</span>
                     </div>
                     <div class="ticker-match-card active-match">
                         <span class="t-city">NY (MetLife)</span>
-                        <span class="t-teams" id="ticker-teams-usager">USA 🇺🇸 2-1 🇩🇪 GER</span>
+                        <span class="t-teams" id="ticker-teams-usager">USA <span role="img" aria-label="United States Flag">🇺🇸</span> 2-1 <span role="img" aria-label="Germany Flag">🇩🇪</span> GER</span>
                         <span class="t-time blinking" id="ticker-time-usager">88'</span>
                     </div>
                     <div class="ticker-match-card active-match">
                         <span class="t-city">MEX (Azteca)</span>
-                        <span class="t-teams" id="ticker-teams-mexeng">MEX 🇲🇽 0-0 🏴󠁧󠁢󠁥󠁮󠁧󠁿 ENG</span>
+                        <span class="t-teams" id="ticker-teams-mexeng">MEX <span role="img" aria-label="Mexico Flag">🇲🇽</span> 0-0 <span role="img" aria-label="England Flag">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span> ENG</span>
                         <span class="t-time" id="ticker-time-mexeng">HT</span>
                     </div>
                     <div class="ticker-match-card completed-match">
                         <span class="t-city">DAL (AT&T)</span>
-                        <span class="t-teams">BRA 🇧🇷 2-1 🇪🇸 ESP</span>
+                        <span class="t-teams">BRA <span role="img" aria-label="Brazil Flag">🇧🇷</span> 2-1 <span role="img" aria-label="Spain Flag">🇪🇸</span> ESP</span>
                         <span class="t-time">FT</span>
                     </div>
                     <div class="ticker-match-card completed-match">
                         <span class="t-city">ATL (Mercedes)</span>
-                        <span class="t-teams">ITA 🇮🇹 1-0 🇵🇹 POR</span>
+                        <span class="t-teams">ITA <span role="img" aria-label="Italy Flag">🇮🇹</span> 1-0 <span role="img" aria-label="Portugal Flag">🇵🇹</span> POR</span>
                         <span class="t-time">FT</span>
                     </div>
                 </div>
@@ -360,9 +360,9 @@
                         <div class="chat-messages-container" id="fan-chat-messages" role="log" aria-live="polite" aria-label="Fan chat history">
                             <!-- System Greeting message -->
                             <div class="message assistant-msg">
-                                <div class="msg-avatar font-awesome-avatar">🤖</div>
+                                <div class="msg-avatar font-awesome-avatar" role="img" aria-label="StadiumGuide Robot Avatar">🤖</div>
                                 <div class="msg-bubble">
-                                    <p>Hello! Welcome to the FIFA World Cup 2026. I am **StadiumGuide AI**, your virtual host. 🏟️✨</p>
+                                    <p>Hello! Welcome to the FIFA World Cup 2026. I am **StadiumGuide AI**, your virtual host. <span role="img" aria-label="Stadium">🏟️</span><span role="img" aria-label="Sparkles">✨</span></p>
                                     <p>I can help you translate languages, find your seating row, calculate electric shuttle times, locate wheelchair accessible lifts, or see menu options at concessions. How can I make your stadium experience spectacular today?</p>
                                 </div>
                             </div>
@@ -370,10 +370,10 @@
 
                         <!-- Quick Action Suggestion Prompts -->
                         <div class="chat-suggestions">
-                            <button class="suggest-chip" data-prompt="Where is the nearest wheelchair accessible restroom and lift to Section 108?">♿ Restroom & Lift Accessibility</button>
-                            <button class="suggest-chip" data-prompt="How do I take the electric shuttle back to parking lot C?">🚌 Electric Shuttle Route</button>
-                            <button class="suggest-chip" data-prompt="What matches are playing today July 6, 2026?">📅 Today's Match Schedule</button>
-                            <button class="suggest-chip" data-prompt="¿Dónde puedo canjear mis Green Coins en el estadio?">🇪🇸 Canjear Green Coins (ES)</button>
+                            <button class="suggest-chip" data-prompt="Where is the nearest wheelchair accessible restroom and lift to Section 108?"><span role="img" aria-label="Wheelchair symbol">♿</span> Restroom & Lift Accessibility</button>
+                            <button class="suggest-chip" data-prompt="How do I take the electric shuttle back to parking lot C?"><span role="img" aria-label="Bus">🚌</span> Electric Shuttle Route</button>
+                            <button class="suggest-chip" data-prompt="What matches are playing today July 6, 2026?"><span role="img" aria-label="Calendar">📅</span> Today's Match Schedule</button>
+                            <button class="suggest-chip" data-prompt="¿Dónde puedo canjear mis Green Coins en el estadio?"><span role="img" aria-label="Spain Flag">🇪🇸</span> Canjear Green Coins (ES)</button>
                         </div>
 
                         <!-- Message Input area -->
@@ -532,7 +532,7 @@
 
                         <!-- Action Controls in Telemetry Room -->
                         <div class="telemetry-action-footer">
-                            <p class="footer-alert-desc"><strong class="text-danger">⚠️ Bottleneck Triggered at Gate D:</strong> GenAI crowd rerouting active. Broadcast messages dispatched to 42 surrounding volunteer tablets.</p>
+                            <p class="footer-alert-desc"><strong class="text-danger"><span role="img" aria-label="Warning">⚠️</span> Bottleneck Triggered at Gate D:</strong> GenAI crowd rerouting active. Broadcast messages dispatched to 42 surrounding volunteer tablets.</p>
                             <button id="trigger-reroute-btn" class="action-btn red-btn">Deploy AI Redirect Protocols</button>
                         </div>
                     </div>
@@ -555,7 +555,7 @@
                         <div class="sustainability-ops-grid">
                             <!-- Smart Waste Sensor Levels -->
                             <div class="waste-sensor-monitor">
-                                <h3>🔋 Smart Bin Fill Sensors (Live)</h3>
+                                <h3><span role="img" aria-label="Battery">🔋</span> Smart Bin Fill Sensors (Live)</h3>
                                 <div class="bin-grid">
                                     <div class="bin-card">
                                         <div class="bin-title">Sector 102 (Gate A)</div>
@@ -583,7 +583,7 @@
 
                             <!-- Energy Grid Metrics -->
                             <div class="energy-solar-monitor">
-                                <h3>☀️ Solar & Clean Energy Grid</h3>
+                                <h3><span role="img" aria-label="Sun">☀️</span> Solar & Clean Energy Grid</h3>
                                 <div class="energy-circle-container">
                                     <!-- Dynamic clean energy metrics -->
                                     <div class="metric-block">
@@ -596,7 +596,7 @@
                                     </div>
                                 </div>
                                 <div class="energy-control-actions">
-                                    <button class="small-ops-btn active" id="eco-power-btn">AI Intelligent HVAC Eco Mode</button>
+                                    <button class="small-ops-btn active" id="eco-power-btn" aria-pressed="true">AI Intelligent HVAC Eco Mode</button>
                                 </div>
                             </div>
                         </div>
@@ -674,9 +674,9 @@
                         <!-- Chat log -->
                         <div class="chat-messages-container" id="ops-chat-messages" role="log" aria-live="polite" aria-label="Operations chat history">
                             <div class="message assistant-msg ops">
-                                <div class="msg-avatar font-awesome-avatar gold-bg">📊</div>
+                                <div class="msg-avatar font-awesome-avatar gold-bg" role="img" aria-label="ArenaOps Chart Icon">📊</div>
                                 <div class="msg-bubble">
-                                    <p>Welcome to **ArenaOps Intelligence Console** for FIFA World Cup 2026. 🎛️🖥️</p>
+                                    <p>Welcome to **ArenaOps Intelligence Console** for FIFA World Cup 2026. <span role="img" aria-label="Knobs">🎛️</span><span role="img" aria-label="Desktop Monitor">🖥️</span></p>
                                     <p>I am your Generative AI Decision Support Officer. I have complete real-time telemetry ingestion from sensors, gates, ticket systems, waste bins, and weather services.</p>
                                     <p>You can ask me to draft crowd control alerts, compile stadium operations briefs, map sustainability reports, or coordinate volunteers. Try one of the executive actions below or type your custom inquiry.</p>
                                 </div>
@@ -717,7 +717,7 @@
         <div class="modal-card glassmorphic">
             <div class="modal-header">
                 <div class="modal-title-area">
-                    <span class="gold-trophy">🏆</span>
+                    <span class="gold-trophy" role="img" aria-label="Gold Trophy">🏆</span>
                     <div>
                         <h2>FIFA World Cup 2026 Knockout Bracket</h2>
                         <p>Round of 16 Phase • Live Telemetry Ingestion (July 6, 2026)</p>
@@ -735,41 +735,41 @@
                             <h3>Round of 16</h3>
                             
                             <div class="bracket-matchup completed">
-                                <div class="bracket-team winner">🇧🇷 BRAZIL <span class="score mono-num">2</span></div>
-                                <div class="bracket-team">🇪🇸 SPAIN <span class="score mono-num">1</span></div>
+                                <div class="bracket-team winner"><span role="img" aria-label="Brazil Flag">🇧🇷</span> BRAZIL <span class="score mono-num">2</span></div>
+                                <div class="bracket-team"><span role="img" aria-label="Spain Flag">🇪🇸</span> SPAIN <span class="score mono-num">1</span></div>
                                 <div class="match-meta">DAL (AT&T) • July 4</div>
                             </div>
 
                             <div class="bracket-matchup completed">
-                                <div class="bracket-team winner">🇮🇹 ITALY <span class="score mono-num">1</span></div>
-                                <div class="bracket-team">🇵🇹 PORTUGAL <span class="score mono-num">0</span></div>
+                                <div class="bracket-team winner"><span role="img" aria-label="Italy Flag">🇮🇹</span> ITALY <span class="score mono-num">1</span></div>
+                                <div class="bracket-team"><span role="img" aria-label="Portugal Flag">🇵🇹</span> PORTUGAL <span class="score mono-num">0</span></div>
                                 <div class="match-meta">ATL (Mercedes) • July 4</div>
                             </div>
 
                             <div class="bracket-matchup active">
-                                <div class="bracket-team">🇺🇸 USA <span class="score mono-num" id="bracket-score-usa">2</span></div>
-                                <div class="bracket-team">🇩🇪 GERMANY <span class="score mono-num" id="bracket-score-ger">1</span></div>
+                                <div class="bracket-team"><span role="img" aria-label="United States Flag">🇺🇸</span> USA <span class="score mono-num" id="bracket-score-usa">2</span></div>
+                                <div class="bracket-team"><span role="img" aria-label="Germany Flag">🇩🇪</span> GERMANY <span class="score mono-num" id="bracket-score-ger">1</span></div>
                                 <span class="live-tag" id="bracket-time-usager">LIVE 88'</span>
                                 <div class="match-meta">NY (MetLife) • July 6</div>
                             </div>
 
                             <div class="bracket-matchup active">
-                                <div class="bracket-team">🇦🇷 ARGENTINA <span class="score mono-num" id="bracket-score-arg">1</span></div>
-                                <div class="bracket-team">🇫🇷 FRANCE <span class="score mono-num" id="bracket-score-fra">1</span></div>
+                                <div class="bracket-team"><span role="img" aria-label="Argentina Flag">🇦🇷</span> ARGENTINA <span class="score mono-num" id="bracket-score-arg">1</span></div>
+                                <div class="bracket-team"><span role="img" aria-label="France Flag">🇫🇷</span> FRANCE <span class="score mono-num" id="bracket-score-fra">1</span></div>
                                 <span class="live-tag" id="bracket-time-argfra">LIVE 74'</span>
                                 <div class="match-meta">LA (SoFi) • July 6</div>
                             </div>
 
                             <div class="bracket-matchup active">
-                                <div class="bracket-team">🇲🇽 MEXICO <span class="score mono-num" id="bracket-score-mex">0</span></div>
-                                <div class="bracket-team">🏴󠁧󠁢󠁥󠁮󠁧󠁿 ENGLAND <span class="score mono-num" id="bracket-score-eng">0</span></div>
+                                <div class="bracket-team"><span role="img" aria-label="Mexico Flag">🇲🇽</span> MEXICO <span class="score mono-num" id="bracket-score-mex">0</span></div>
+                                <div class="bracket-team"><span role="img" aria-label="England Flag">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span> ENGLAND <span class="score mono-num" id="bracket-score-eng">0</span></div>
                                 <span class="live-tag halftime" id="bracket-time-mexeng">HT</span>
                                 <div class="match-meta">MEX (Azteca) • July 6</div>
                             </div>
 
                             <div class="bracket-matchup upcoming">
-                                <div class="bracket-team">🇯🇵 JAPAN <span class="score mono-num">-</span></div>
-                                <div class="bracket-team">🇭🇷 CROATIA <span class="score mono-num">-</span></div>
+                                <div class="bracket-team"><span role="img" aria-label="Japan Flag">🇯🇵</span> JAPAN <span class="score mono-num">-</span></div>
+                                <div class="bracket-team"><span role="img" aria-label="Croatia Flag">🇭🇷</span> CROATIA <span class="score mono-num">-</span></div>
                                 <div class="match-meta">MIA (Hard Rock) • July 7</div>
                             </div>
                         </div>
@@ -778,8 +778,8 @@
                         <div class="bracket-round qf">
                             <h3>Quarter-Finals</h3>
                             <div class="bracket-matchup upcoming">
-                                <div class="bracket-team">🇧🇷 BRAZIL</div>
-                                <div class="bracket-team">🇮🇹 ITALY</div>
+                                <div class="bracket-team"><span role="img" aria-label="Brazil Flag">🇧🇷</span> BRAZIL</div>
+                                <div class="bracket-team"><span role="img" aria-label="Italy Flag">🇮🇹</span> ITALY</div>
                                 <div class="match-meta">BOS (Gillette) • July 10</div>
                             </div>
                             <div class="bracket-matchup upcoming">
@@ -803,8 +803,8 @@
                         <div class="bracket-round finals">
                             <h3>FINAL</h3>
                             <div class="bracket-matchup upcoming final-match">
-                                <div class="bracket-team">🏆 TBD</div>
-                                <div class="bracket-team">🏆 TBD</div>
+                                <div class="bracket-team"><span role="img" aria-label="Trophy">🏆</span> TBD</div>
+                                <div class="bracket-team"><span role="img" aria-label="Trophy">🏆</span> TBD</div>
                                 <div class="match-meta text-gold">NY (MetLife) • July 19</div>
                             </div>
                         </div>
@@ -813,7 +813,7 @@
 
                 <!-- 16 Host Venues Telemetry Center table -->
                 <div class="venues-metrics-table-wrapper">
-                    <h3>🏟️ 16 Host Venues Operations & Crowd Index Dashboard</h3>
+                    <h3><span role="img" aria-label="Stadium">🏟️</span> 16 Host Venues Operations & Crowd Index Dashboard</h3>
                     <table class="venues-metrics-table">
                         <thead>
                             <tr>
